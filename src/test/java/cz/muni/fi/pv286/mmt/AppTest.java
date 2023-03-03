@@ -1,4 +1,4 @@
-package org.example;
+package cz.muni.fi.pv286.mmt;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
