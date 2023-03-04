@@ -15,21 +15,27 @@ public abstract class RepresentationParser {
 
     // TODO: make this streamable / allocate in blocks to avoid allocating a big chunk of memory at once
     protected byte[] getInput() throws IOException {
-        var input = options.getInputFile();
-        var reader = new ByteArrayOutputStream();
+        var inputStream = options.getInputFile();
+        var outputStream = new ByteArrayOutputStream();
         int readByte;
 
-        do {
-            readByte = input.read();
-            reader.write(readByte);
+        final int maxFileSize = 1073741824; // 1 GB
 
-            final int maxFileSize = 10 ^ 9; // 1 GB
-            if (reader.size() > maxFileSize) {
+        while (true) {
+            readByte = inputStream.read();
+
+            if (readByte == -1) { // break on EOF
+                break;
+            }
+
+            if (outputStream.size() > maxFileSize) {
                 throw new IOException("Input is too big.");
             }
-        } while (readByte != -1); // EOF
 
-        return reader.toByteArray();
+            outputStream.write(readByte);
+        }
+
+        return outputStream.toByteArray();
     }
 
     public abstract void parseTo(byte[] bytes) throws IOException;
