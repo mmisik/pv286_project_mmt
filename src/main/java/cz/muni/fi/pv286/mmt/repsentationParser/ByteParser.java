@@ -10,6 +10,7 @@ public class ByteParser extends RepresentationParser {
         super(options);
     }
 
+    @Override
     public void parseTo(byte[] bytes) throws IOException {
         final OutputStream output = options.getOutputFile();
         final InputStream input = new ByteArrayInputStream(bytes);
@@ -26,6 +27,7 @@ public class ByteParser extends RepresentationParser {
         }
     }
 
+    @Override
     public byte[] parseFrom() throws IOException {
         // no additional processing is necessary
         return getInput();

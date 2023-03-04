@@ -54,4 +54,9 @@ class HexParserTest extends ParserTest {
     public void fromHexToBytesTest() {
         assertConversion(HexParser.class, ByteParser.class, "74657374".getBytes(), "test".getBytes());
     }
+
+    @Test
+    public void fromHexToIntTest() {
+        assertConversion(HexParser.class, IntParser.class, "74657374".getBytes(), "1952805748".getBytes());
+    }
 }

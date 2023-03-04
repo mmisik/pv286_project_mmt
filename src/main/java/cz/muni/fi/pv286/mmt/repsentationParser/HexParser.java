@@ -25,6 +25,7 @@ public class HexParser extends RepresentationParser {
         return String.format("%02x", b);
     }
 
+    @Override
     public void parseTo(byte[] bytes) throws IOException {
         final OutputStream output = options.getOutputFile();
         final InputStream input = new ByteArrayInputStream(bytes);
@@ -42,6 +43,7 @@ public class HexParser extends RepresentationParser {
         }
     }
 
+    @Override
     public byte[] parseFrom() throws IOException {
 
         byte[] bytes = getInput();
