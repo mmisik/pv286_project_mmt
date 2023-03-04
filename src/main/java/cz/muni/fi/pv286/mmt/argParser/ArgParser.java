@@ -126,6 +126,8 @@ public class ArgParser {
                 }
             }
         }
+
+        return options;
     }
 
     private static ArgMatch getArgMatch(String str) throws BadArgumentsException {
@@ -174,7 +176,7 @@ public class ArgParser {
         throw new BadArgumentsException();
     }
 
-    private static String getNextOption(String[] options, int index) {
-
-    }
+//    private static String getNextOption(String[] options, int index) {
+//
+//    }
 }
