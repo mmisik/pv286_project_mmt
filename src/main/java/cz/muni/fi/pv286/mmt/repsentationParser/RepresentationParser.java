@@ -4,6 +4,7 @@ import cz.muni.fi.pv286.mmt.model.Options;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public abstract class RepresentationParser {
 
@@ -15,8 +16,8 @@ public abstract class RepresentationParser {
 
     // TODO: make this streamable / allocate in blocks to avoid allocating a big chunk of memory at once
     protected byte[] getInput() throws IOException {
-        var inputStream = options.getInputFile();
-        var outputStream = new ByteArrayOutputStream();
+        InputStream inputStream = options.getInputFile();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         int readByte;
 
         final int maxFileSize = 1073741824; // 1 GB

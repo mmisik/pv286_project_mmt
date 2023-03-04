@@ -8,40 +8,14 @@ import java.io.ByteArrayOutputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ByteParserTest {
+class HexParserTest {
 
     @Test
     public void roundTripTest() {
         Options options = new Options();
 
-        byte[] testCase = "test".getBytes();
-
-        var input = new ByteArrayInputStream(testCase);
-        options.setInputFile(input);
-
-        var output = new ByteArrayOutputStream();
-        options.setOutputFile(output);
-
-        ByteParser byteParser = new ByteParser(options);
-
-        try {
-            byte[] bytes = byteParser.parseFrom();
-            byteParser.parseTo(bytes);
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-
-        assertArrayEquals(testCase, output.toByteArray());
-    }
-
-    @Test
-    public void fromBytesToHexTest() {
-        Options options = new Options();
-
-        byte[] testCase = "test".getBytes();
-
         // 74657374 = test
-        byte[] testOutput = "74657374".getBytes();
+        byte[] testCase = "74657374".getBytes();
 
         var input = new ByteArrayInputStream(testCase);
         options.setInputFile(input);
@@ -50,15 +24,43 @@ class ByteParserTest {
         options.setOutputFile(output);
 
         HexParser hexParser = new HexParser(options);
+
+        try {
+            byte[] bytes = hexParser.parseFrom();
+            hexParser.parseTo(bytes);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
+        assertArrayEquals(testCase, output.toByteArray());
+    }
+
+    @Test
+    public void fromHexToBytesTest() {
+        Options options = new Options();
+
+        // 74657374 = test
+        byte[] testCase = "74657374".getBytes();
+        byte[] testOutput = "test".getBytes();
+
+        var input = new ByteArrayInputStream(testCase);
+        options.setInputFile(input);
+
+        var output = new ByteArrayOutputStream();
+        options.setOutputFile(output);
+
+        HexParser hexParser = new HexParser(options);
+
         ByteParser byteParser = new ByteParser(options);
 
         try {
-            byte[] bytes = byteParser.parseFrom();
-            hexParser.parseTo(bytes);
+            byte[] bytes = hexParser.parseFrom();
+            byteParser.parseTo(bytes);
         } catch (Exception e) {
             fail(e.getMessage());
         }
 
         assertArrayEquals(testOutput, output.toByteArray());
     }
+
 }
