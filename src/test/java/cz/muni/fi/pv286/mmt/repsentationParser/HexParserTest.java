@@ -30,6 +30,7 @@ class HexParserTest extends ParserTest {
         assertRoundTripThrows(HexParser.class, "a".getBytes());
         assertRoundTripThrows(HexParser.class, "aaa".getBytes());
         assertRoundTripThrows(HexParser.class, "aaaaa".getBytes());
+        assertRoundTripThrows(HexParser.class, "a    a aa ab b".getBytes());
     }
 
     @Test
@@ -39,6 +40,14 @@ class HexParserTest extends ParserTest {
         assertRoundTripThrows(HexParser.class, "abcdefgh".getBytes());
         assertRoundTripThrows(HexParser.class, "1234556x".getBytes());
         assertRoundTripThrows(HexParser.class, "x1234567".getBytes());
+    }
+
+    @Test
+    public void interleavedSpacesHexTest() {
+        assertRoundTrip(HexParser.class, "aa bb cc dd".getBytes(), "aabbccdd".getBytes());
+        assertRoundTrip(HexParser.class, "a a  bb   cc d d ".getBytes(), "aabbccdd".getBytes());
+        assertRoundTrip(HexParser.class, "74 65 73 74".getBytes(), "74657374".getBytes());
+        assertRoundTrip(HexParser.class, "7 4 6 5 7 3 7 4".getBytes(), "74657374".getBytes());
     }
 
     @Test

@@ -46,27 +46,34 @@ public class HexParser extends RepresentationParser {
 
         byte[] bytes = getInput();
 
-        // check if whole byte is input (2 hex characters)
-        if (bytes.length % 2 != 0) {
-            throw new IOException("Invalid hex input.");
-        }
-
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
         final InputStream input = new ByteArrayInputStream(bytes);
 
         while (true) {
             int readByte1 = input.read();
+
+            // ignore empty spaces
+            while (readByte1 == ' ') {
+                readByte1 = input.read();
+            }
+
             if (readByte1 == -1) {
                 break;
             }
 
             int readByte2 = input.read();
+
+            // ignore empty spaces
+            while (readByte2 == ' ') {
+                readByte2 = input.read();
+            }
+
             if (readByte2 == -1) {
-                break;
+                throw new IOException("Input is not a multiple of 2.");
             }
 
             if (!isHex((char) readByte1) || !isHex((char) readByte2)) {
-                throw new IOException("Invalid hex input.");
+                throw new IOException("Invalid hex characters encountered.");
             }
 
             byte hexByte = getByteFromHex((char) readByte1, (char) readByte2);

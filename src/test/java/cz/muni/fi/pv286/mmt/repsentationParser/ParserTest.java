@@ -49,6 +49,11 @@ public class ParserTest {
         assertConversionThrows(parser, parser, input, input);
     }
 
+    protected <T extends RepresentationParser>
+    void assertRoundTripThrows(Class<T> parser, byte[] input, byte[] output) {
+        assertConversionThrows(parser, parser, input, output);
+    }
+
     private <From extends RepresentationParser, To extends RepresentationParser>
     void assertConversion(Options options, From fromParser, To toParser, byte[] input, byte[] output) {
 
@@ -87,6 +92,11 @@ public class ParserTest {
         assertConversion(parser, parser, input, input);
     }
 
+    protected <T extends RepresentationParser>
+    void assertRoundTrip(Class<T> parser, byte[] input, byte[] output) {
+        assertConversion(parser, parser, input, output);
+    }
+
     private <From extends RepresentationParser, To extends RepresentationParser>
     void assertConversionFails(Options options, From fromParser, To toParser, byte[] input, byte[] output) {
 
@@ -123,5 +133,10 @@ public class ParserTest {
     protected <T extends RepresentationParser>
     void assertRoundTripFails(Class<T> parser, byte[] input) {
         assertConversionFails(parser, parser, input, input);
+    }
+
+    protected <T extends RepresentationParser>
+    void assertRoundTripFails(Class<T> parser, byte[] input, byte[] output) {
+        assertConversionFails(parser, parser, input, output);
     }
 }
