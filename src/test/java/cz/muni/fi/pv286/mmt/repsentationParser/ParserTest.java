@@ -87,6 +87,19 @@ public class ParserTest {
         }
     }
 
+    protected <From extends RepresentationParser, To extends RepresentationParser>
+    void assertConversion(Options options, Class<From> fromClass, Class<To> toClass, byte[] input, byte[] output) {
+
+        try {
+            From fromInstance = fromClass.getConstructor(Options.class).newInstance(options);
+            To toInstance = toClass.getConstructor(Options.class).newInstance(options);
+
+            assertConversion(options, fromInstance, toInstance, input, output);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
     protected <T extends RepresentationParser>
     void assertRoundTrip(Class<T> parser, byte[] input) {
         assertConversion(parser, parser, input, input);

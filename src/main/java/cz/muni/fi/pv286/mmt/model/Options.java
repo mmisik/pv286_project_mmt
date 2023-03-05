@@ -1,6 +1,5 @@
 package cz.muni.fi.pv286.mmt.model;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Optional;
@@ -26,8 +25,8 @@ public class Options {
         return inputFromToOption;
     }
 
-    public void setInputFromToOption(Optional<FromToOption> inputFromToOption) {
-        this.inputFromToOption = inputFromToOption;
+    public void setInputFromToOption(FromToOption inputFromToOption) {
+        this.inputFromToOption = Optional.ofNullable(inputFromToOption);
     }
 
     public IOFormat getOutputFormat() {
