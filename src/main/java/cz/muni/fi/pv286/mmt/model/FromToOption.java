@@ -5,7 +5,11 @@ public enum FromToOption {
     Little,
     Left,
     Right,
-    SquareBracket,
+    Hex,
+    Decimal,
+    Character,
+    Binary,
     CurlyBracket,
+    SquareBracket,
     RegularBracket
 }

@@ -15,8 +15,6 @@ public class ArgParser {
 
     private boolean hasFromFormat = false;
     private boolean hasToFormat = false;
-    private boolean hasFromOption = false;
-    private boolean hasToOption = false;
     private boolean hasInputFile = false;
     private boolean hasOutputFile = false;
     private boolean hasDelimiter = false;
@@ -58,6 +56,11 @@ public class ArgParser {
         static Pattern curlyBracket = Pattern.compile("^\"[{}]\"$");
         static Pattern squareBracket = Pattern.compile("^\"[\\[\\]]\"$");
         static Pattern regularBracket = Pattern.compile("^\"[()]\"$");
+        static Pattern hexOption = Pattern.compile("^0x$");
+        static Pattern decimalOption = Pattern.compile("^0$");
+        static Pattern charOption = Pattern.compile("^a$");
+        static Pattern binaryOption = Pattern.compile("^0b$");
+
     }
 
     public static void PrintHelp() {
@@ -88,8 +91,6 @@ public class ArgParser {
     private void cleanFlags() {
         hasFromFormat = false;
         hasToFormat = false;
-        hasFromOption = false;
-        hasToOption = false;
         hasInputFile = false;
         hasOutputFile = false;
         hasDelimiter = false;
@@ -262,6 +263,18 @@ public class ArgParser {
         if (Patterns.regularBracket.matcher(option).matches()) {
             return FromToOption.RegularBracket;
         }
+        if (Patterns.hexOption.matcher(option).matches()) {
+            return FromToOption.Hex;
+        }
+        if (Patterns.decimalOption.matcher(option).matches()) {
+            return FromToOption.Decimal;
+        }
+        if (Patterns.charOption.matcher(option).matches()) {
+            return FromToOption.Character;
+        }
+        if (Patterns.binaryOption.matcher(option).matches()) {
+            return FromToOption.Binary;
+        }
         throw new InvalidInputException();
     }
 
@@ -278,15 +291,10 @@ public class ArgParser {
     }
 
     private void setOption(Options options, FromToOption fromToOption, FromOrTo fromOrTo) throws BadArgumentsException {
-        if (this.hasFromOption && (fromOrTo == FromOrTo.From) || this.hasToOption && (fromOrTo == FromOrTo.To)) {
-            throw new BadArgumentsException();
-        }
         if (FromOrTo.From == fromOrTo) {
-            this.hasFromOption = true;
-            options.setInputFromToOption(Optional.of(fromToOption));
+            options.setInputFromToOption(fromToOption);
         } else if (FromOrTo.To == fromOrTo) {
-            this.hasToOption = true;
-            options.setOutputFromToOption(Optional.of(fromToOption));
+            options.setOutputFromToOption(fromToOption);
         }
     }
 
@@ -301,38 +309,8 @@ public class ArgParser {
             this.hasToFormat = true;
             options.setOutputFormat(format);
         }
-        setDefaults(options, format, fromOrTo);
     }
 
-    private void setDefaults(Options options, IOFormat format, FromOrTo fromOrTo) {
-        if (fromOrTo == FromOrTo.From && hasFromFormat) {
-            return;
-        }
-        if (fromOrTo == FromOrTo.To && hasToFormat) {
-            return;
-        }
-        if (format == IOFormat.Int) {
-            if (fromOrTo == FromOrTo.From) {
-                options.setInputFromToOption(Optional.of(FromToOption.Big));
-            } else if (fromOrTo == FromOrTo.To) {
-                options.setOutputFromToOption(Optional.of(FromToOption.Big));
-            }
-        }
-        if (format == IOFormat.Bits) {
-            if (fromOrTo == FromOrTo.From) {
-                options.setInputFromToOption(Optional.of(FromToOption.Left));
-            } else if (fromOrTo == FromOrTo.To) {
-                options.setOutputFromToOption(Optional.of(FromToOption.Left));
-            }
-        }
-        if (format == IOFormat.Array) {
-            if (fromOrTo == FromOrTo.From) {
-                options.setInputFromToOption(Optional.of(FromToOption.CurlyBracket));
-            } else if (fromOrTo == FromOrTo.To) {
-                options.setOutputFromToOption(Optional.of(FromToOption.CurlyBracket));
-            }
-        }
-    }
 
     private void setFile(Options options, String path, FromOrTo fromOrTo) throws BadArgumentsException, FileNotFoundException, InvalidInputException {
         if (this.hasInputFile && (fromOrTo == FromOrTo.From) || this.hasOutputFile && (fromOrTo == FromOrTo.To)) {
@@ -381,17 +359,21 @@ public class ArgParser {
         if (options.getInputFromToOption().isPresent() &&
                 (options.getInputFormat() != IOFormat.Int
                         || options.getInputFormat() != IOFormat.Bits
-                        || options.getInputFormat() != IOFormat.Array
                 )) {
             throw new BadArgumentsException();
         }
         if (options.getOutputFromToOption().isPresent() &&
                 (options.getOutputFormat() != IOFormat.Int
-                        || options.getOutputFormat() != IOFormat.Bits
                         || options.getOutputFormat() != IOFormat.Array
                 )) {
             throw new BadArgumentsException();
         }
+        if (options.getBracketType().isPresent() &&
+                (options.getOutputFormat() != IOFormat.Array
+                )) {
+            throw new BadArgumentsException();
+        }
+
         if (options.getInputFromToOption().isPresent() &&
                 (options.getInputFormat() == IOFormat.Int
                         && (options.getInputFromToOption().get() != FromToOption.Big
@@ -410,24 +392,13 @@ public class ArgParser {
                         || options.getInputFromToOption().get() != FromToOption.Right))) {
             throw new BadArgumentsException();
         }
-        if (options.getOutputFromToOption().isPresent() &&
-                (options.getOutputFormat() == IOFormat.Bits
-                        && (options.getOutputFromToOption().get() != FromToOption.Left
-                        || options.getOutputFromToOption().get() != FromToOption.Right))) {
-            throw new BadArgumentsException();
-        }
-        if (options.getInputFromToOption().isPresent() &&
-                (options.getInputFormat() == IOFormat.Array
-                        && (options.getInputFromToOption().get() != FromToOption.CurlyBracket
-                        || options.getInputFromToOption().get() != FromToOption.SquareBracket
-                        || options.getInputFromToOption().get() != FromToOption.RegularBracket))) {
-            throw new BadArgumentsException();
-        }
+
         if (options.getOutputFromToOption().isPresent() &&
                 (options.getOutputFormat() == IOFormat.Array
-                        && (options.getOutputFromToOption().get() != FromToOption.CurlyBracket
-                        || options.getOutputFromToOption().get() != FromToOption.SquareBracket
-                        || options.getOutputFromToOption().get() != FromToOption.RegularBracket))) {
+                        && (options.getOutputFromToOption().get() != FromToOption.Hex
+                        || options.getOutputFromToOption().get() != FromToOption.Decimal
+                        || options.getOutputFromToOption().get() != FromToOption.Character
+                        || options.getOutputFromToOption().get() != FromToOption.Binary))) {
             throw new BadArgumentsException();
         }
     }
