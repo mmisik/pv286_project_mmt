@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ArgParser {
@@ -30,7 +31,7 @@ public class ArgParser {
         static Pattern shortToFormat = Pattern.compile("^-t$");
         static Pattern longToFormat = Pattern.compile("^--to=\\w+$");
         //static Pattern longToFormatExtract = Pattern.compile("^--to=(.?)$");
-        static Pattern toOption = Pattern.compile("^--to-options=\\w+$");
+        static Pattern toOption = Pattern.compile("^--to-options=.*$");
         //static Pattern longToOptionExtract = Pattern.compile("^--to-options=(.?)$");
         static Pattern shortInputFile = Pattern.compile("^-i$");
         static Pattern longInputFile = Pattern.compile("^--input=\\w+$");
@@ -52,7 +53,7 @@ public class ArgParser {
         static Pattern little = Pattern.compile("^little$");
         static Pattern left = Pattern.compile("^left$");
         static Pattern right = Pattern.compile("^right$");
-        static Pattern extractor = Pattern.compile("-{1,2}\\w+=(.?)");
+        static Pattern extractor = Pattern.compile("-{1,2}\\w+=(.*)");
         static Pattern curlyBracket = Pattern.compile("^\"[{}]\"$");
         static Pattern squareBracket = Pattern.compile("^\"[\\[\\]]\"$");
         static Pattern regularBracket = Pattern.compile("^\"[()]\"$");
@@ -96,7 +97,7 @@ public class ArgParser {
         hasDelimiter = false;
     }
 
-    private Options parse() throws FileNotFoundException {
+    public Options parse() throws FileNotFoundException {
         Options options = new Options();
         cleanFlags();
         checkForHelp(args);
@@ -287,7 +288,12 @@ public class ArgParser {
     }
 
     private static String extractOption(String option) throws IllegalArgumentException, IndexOutOfBoundsException {
-        return Patterns.extractor.matcher(option).group(0);
+        Matcher m = Patterns.extractor.matcher(option);
+        if(m.find()) {
+            return m.group(1);
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     private void setOption(Options options, FromToOption fromToOption, FromOrTo fromOrTo) throws BadArgumentsException {
@@ -358,47 +364,43 @@ public class ArgParser {
         }
         if (options.getInputFromToOption().isPresent() &&
                 (options.getInputFormat() != IOFormat.Int
-                        || options.getInputFormat() != IOFormat.Bits
+                        && options.getInputFormat() != IOFormat.Bits
                 )) {
             throw new BadArgumentsException();
         }
         if (options.getOutputFromToOption().isPresent() &&
                 (options.getOutputFormat() != IOFormat.Int
-                        || options.getOutputFormat() != IOFormat.Array
+                        && options.getOutputFormat() != IOFormat.Array
                 )) {
             throw new BadArgumentsException();
         }
-        if (options.getBracketType().isPresent() &&
-                (options.getOutputFormat() != IOFormat.Array
-                )) {
+        if (options.getBracketType().isPresent() && options.getOutputFormat() != IOFormat.Array) {
             throw new BadArgumentsException();
         }
 
         if (options.getInputFromToOption().isPresent() &&
                 (options.getInputFormat() == IOFormat.Int
-                        && (options.getInputFromToOption().get() != FromToOption.Big
-                        || options.getInputFromToOption().get() != FromToOption.Little))) {
+                        && (options.getInputFromToOption().get().ordinal() < FromToOption.Big.ordinal()
+                        || options.getInputFromToOption().get().ordinal() > FromToOption.Little.ordinal()))) {
             throw new BadArgumentsException();
         }
-        if (options.getOutputFromToOption().isPresent() &&
-                (options.getOutputFormat() == IOFormat.Int
-                        && (options.getOutputFromToOption().get() != FromToOption.Big
-                        || options.getOutputFromToOption().get() != FromToOption.Little))) {
+        if (options.getInputFromToOption().isPresent() &&
+                (options.getInputFormat() == IOFormat.Int
+                        && (options.getInputFromToOption().get().ordinal() < FromToOption.Big.ordinal()
+                        || options.getInputFromToOption().get().ordinal() > FromToOption.Little.ordinal()))) {
             throw new BadArgumentsException();
         }
         if (options.getInputFromToOption().isPresent() &&
                 (options.getInputFormat() == IOFormat.Bits
-                        && (options.getInputFromToOption().get() != FromToOption.Left
-                        || options.getInputFromToOption().get() != FromToOption.Right))) {
+                        && (options.getInputFromToOption().get().ordinal() < FromToOption.Left.ordinal()
+                        || options.getInputFromToOption().get().ordinal() > FromToOption.Right.ordinal()))) {
             throw new BadArgumentsException();
         }
 
         if (options.getOutputFromToOption().isPresent() &&
                 (options.getOutputFormat() == IOFormat.Array
-                        && (options.getOutputFromToOption().get() != FromToOption.Hex
-                        || options.getOutputFromToOption().get() != FromToOption.Decimal
-                        || options.getOutputFromToOption().get() != FromToOption.Character
-                        || options.getOutputFromToOption().get() != FromToOption.Binary))) {
+                        && (options.getOutputFromToOption().get().ordinal() < FromToOption.Hex.ordinal()
+                        || options.getOutputFromToOption().get().ordinal() > FromToOption.Binary.ordinal()))) {
             throw new BadArgumentsException();
         }
     }

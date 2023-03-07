@@ -1,0 +1,149 @@
+package cz.muni.fi.pv286.mmt.repsentationParser;
+
+import cz.muni.fi.pv286.mmt.argParser.ArgParser;
+import cz.muni.fi.pv286.mmt.exceptions.BadArgumentsException;
+import cz.muni.fi.pv286.mmt.model.BracketType;
+import cz.muni.fi.pv286.mmt.model.FromToOption;
+import cz.muni.fi.pv286.mmt.model.IOFormat;
+import cz.muni.fi.pv286.mmt.model.Options;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class ArgParserTest {
+    @Test
+    public void shortBytesTest() {
+        String[] args = "-f bytes -t bytes".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        try {
+            Options options = argParser.parse();
+            assertEquals(options.getInputFormat(), IOFormat.Bytes);
+            assertEquals(options.getOutputFormat(), IOFormat.Bytes);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void longBytesTest() {
+        String[] args = "--from=bytes --to=bytes".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        try {
+            Options options = argParser.parse();
+            assertEquals(options.getInputFormat(), IOFormat.Bytes);
+            assertEquals(options.getOutputFormat(), IOFormat.Bytes);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+    @Test
+    public void hexInputIntOutputTestMixed() {
+        String[] args = "-f hex --to=int".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        try {
+            Options options = argParser.parse();
+            assertEquals(options.getInputFormat(), IOFormat.Hex);
+            assertEquals(options.getOutputFormat(), IOFormat.Int);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void bitsInputArrayOutputTestMixed() {
+        String[] args = "--from=bits -t array".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        try {
+            Options options = argParser.parse();
+            assertEquals(options.getInputFormat(), IOFormat.Bits);
+            assertEquals(options.getOutputFormat(), IOFormat.Array);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testArrayOptions() {
+        String[] args = "--from=array --to=array --to-options=0 --to-options=\"{\"".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        try {
+            Options options = argParser.parse();
+            assertEquals(options.getInputFormat(), IOFormat.Array);
+            assertEquals(options.getOutputFormat(), IOFormat.Array);
+            assertEquals(options.getOutputFromToOption().get(), FromToOption.Decimal);
+            assertEquals(options.getBracketType().get(), BracketType.CurlyBracket);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void defaultArrayOptionsTest() {
+        String[] args = "--from=array --to=array".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        try {
+            Options options = argParser.parse();
+            assertEquals(options.getInputFormat(), IOFormat.Array);
+            assertEquals(options.getOutputFormat(), IOFormat.Array);
+            assertEquals(options.getOutputFromToOption().get(), FromToOption.Hex);
+            assertEquals(options.getBracketType().get(), BracketType.CurlyBracket);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    void intDefaultOptionsTest() {
+        String[] args = "--from=int --to=int".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        try {
+            Options options = argParser.parse();
+            assertEquals(options.getInputFormat(), IOFormat.Int);
+            assertEquals(options.getOutputFormat(), IOFormat.Int);
+            assertEquals(options.getInputFromToOption().get(), FromToOption.Big);
+            assertEquals(options.getOutputFromToOption().get(), FromToOption.Big);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    void intOptionsTest() {
+        String[] args = "--from=int --to=int --to-options=little --from-options=little".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        try {
+            Options options = argParser.parse();
+            assertEquals(options.getInputFormat(), IOFormat.Int);
+            assertEquals(options.getOutputFormat(), IOFormat.Int);
+            assertEquals(options.getInputFromToOption().get(), FromToOption.Little);
+            assertEquals(options.getOutputFromToOption().get(), FromToOption.Little);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void bitsDefaultOptionsTest() {
+        String[] args = "--from=bits --to=bits".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        try {
+            Options options = argParser.parse();
+            assertEquals(options.getInputFormat(), IOFormat.Bits);
+            assertEquals(options.getOutputFormat(), IOFormat.Bits);
+            assertTrue(options.getOutputFromToOption().isEmpty());
+            assertEquals(options.getInputFromToOption().get(), FromToOption.Left);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+/*
+    @Test
+    public void failBytesOptionsTest() {
+        String[] args = "-f bytes -t bytes --from-options=big".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        assertThrows(BadArgumentsException.class, () -> argParser.parse());
+    }
+ */
+
+}

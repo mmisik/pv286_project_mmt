@@ -6,13 +6,13 @@ import java.util.Optional;
 
 public class Options {
     private IOFormat inputFormat;
-    private Optional<FromToOption> inputFromToOption;
+    private Optional<FromToOption> inputFromToOption = Optional.empty();
     private IOFormat outputFormat;
-    private Optional<FromToOption> outputFromToOption;
+    private Optional<FromToOption> outputFromToOption = Optional.empty();
     private InputStream inputFile = System.in;
     private OutputStream outputFile = System.out;
     private char delimiter = '\n';
-    private Optional<BracketType> bracketType;
+    private Optional<BracketType> bracketType = Optional.empty();
     private boolean wasFromOptionSet = false;
     private boolean wasToOptionSet = false;
     private boolean wasBracketSet = false;
@@ -23,10 +23,10 @@ public class Options {
 
     public void setInputFormat(IOFormat inputFormat) {
         if (inputFormat == IOFormat.Int && !wasFromOptionSet) {
-            outputFromToOption = Optional.of(FromToOption.Big);
+            inputFromToOption = Optional.of(FromToOption.Big);
         }
         if(inputFormat == IOFormat.Bits && !wasFromOptionSet) {
-            outputFromToOption = Optional.of(FromToOption.Left);
+            inputFromToOption = Optional.of(FromToOption.Left);
         }
         this.inputFormat = inputFormat;
     }
