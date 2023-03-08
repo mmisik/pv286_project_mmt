@@ -64,7 +64,7 @@ public class ArgParser {
 
     }
 
-    public static void PrintHelp() {
+    public void printHelp() {
         System.out.println("""
                 ./panbyte [ARGS...]
                 ARGS:
