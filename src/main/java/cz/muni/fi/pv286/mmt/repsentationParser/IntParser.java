@@ -1,5 +1,6 @@
 package cz.muni.fi.pv286.mmt.repsentationParser;
 
+import cz.muni.fi.pv286.mmt.model.FromToOption;
 import cz.muni.fi.pv286.mmt.model.Options;
 
 import java.io.ByteArrayInputStream;
@@ -7,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class IntParser extends RepresentationParser {
 
@@ -69,8 +71,12 @@ public class IntParser extends RepresentationParser {
             i++;
         }
 
-        // TODO: little/big endian
-        // bytesToWrite = reverseByteArray(bytesToWrite);
+        Optional<FromToOption> endianness = options.getOutputFromToOption();
+        if (endianness.isPresent()) {
+            if (endianness.get() == FromToOption.Little) {
+                bytesToWrite = reverseByteArray(bytesToWrite);
+            } // else by default is Big endian
+        }
 
         // Java doesn't have unsigned types, so we need to apply a mask to every byte
         long integer = ((long) (bytesToWrite[0] & 0xff) << 24) + ((bytesToWrite[1] & 0xff) << 16) + ((bytesToWrite[2] & 0xff) << 8) + (bytesToWrite[3] & 0xff);
@@ -118,10 +124,14 @@ public class IntParser extends RepresentationParser {
             throw new IOException("Integer is not valid.");
         }
 
-        byte[] integerAsBytes = getBytesFromInteger(integer, Endian.BIG);
+        Endian endian = Endian.BIG;
+        Optional<FromToOption> endianness = options.getInputFromToOption();
+        if (endianness.isPresent()) {
+            if (endianness.get() == FromToOption.Little) {
+                endian = Endian.LITTLE;
+            } // else by default is Big endian
+        }
 
-        // TODO: little/big endian
-
-        return integerAsBytes;
+        return getBytesFromInteger(integer, endian);
     }
 }

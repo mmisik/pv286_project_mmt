@@ -1,5 +1,7 @@
 package cz.muni.fi.pv286.mmt.repsentationParser;
 
+import cz.muni.fi.pv286.mmt.model.FromToOption;
+import cz.muni.fi.pv286.mmt.model.Options;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,6 +52,29 @@ class IntParserTest extends ParserTest {
         assertRoundTripThrows(IntParser.class, "0.13213".getBytes());
         assertRoundTripThrows(IntParser.class, "1,13213".getBytes());
         assertRoundTripThrows(IntParser.class, "+13213".getBytes());
+    }
+
+    @Test
+    public void maxFourBytesTest() {
+        // input must be of maximum 4 bytes, otherwise it cannot be parsed as an 32 bit integer
+        assertConversionThrows(ByteParser.class, IntParser.class, "test\n".getBytes(), "".getBytes());
+        assertConversion(ByteParser.class, IntParser.class, "test".getBytes(), "1952805748".getBytes());
+    }
+
+    @Test
+    public void padZeroesTest() {
+        assertConversion(ByteParser.class, IntParser.class, "te".getBytes(), "29797".getBytes());
+    }
+
+    @Test
+    public void endianityTest() {
+        Options options = new Options();
+        options.setInputFromToOption(FromToOption.Little);
+        assertConversion(options, IntParser.class, HexParser.class, "1234567890".getBytes(), "d2029649".getBytes());
+
+        options = new Options();
+        options.setOutputFromToOption(FromToOption.Little);
+        assertConversion(options, HexParser.class, IntParser.class, "d2029649".getBytes(), "1234567890".getBytes());
     }
 
 }
