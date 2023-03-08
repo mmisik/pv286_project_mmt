@@ -1,6 +1,7 @@
 package cz.muni.fi.pv286.mmt.argParser;
 
 import cz.muni.fi.pv286.mmt.exceptions.BadArgumentsException;
+import cz.muni.fi.pv286.mmt.exceptions.HelpInvokedException;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidInputException;
 import cz.muni.fi.pv286.mmt.model.*;
 
@@ -8,7 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,10 +34,10 @@ public class ArgParser {
         static Pattern toOption = Pattern.compile("^--to-options=.*$");
         //static Pattern longToOptionExtract = Pattern.compile("^--to-options=(.?)$");
         static Pattern shortInputFile = Pattern.compile("^-i$");
-        static Pattern longInputFile = Pattern.compile("^--input=\\w+$");
+        static Pattern longInputFile = Pattern.compile("^--input=.*$");
         //static Pattern longInputFileExtract = Pattern.compile("^--input=(.?)$");
         static Pattern shortOutputFile = Pattern.compile("^-o$");
-        static Pattern longOutputFile = Pattern.compile("^--output=\\w+$");
+        static Pattern longOutputFile = Pattern.compile("^--output=.*$");
         //static Pattern longOutputFileExtract = Pattern.compile("^--output=(.?)$");
         static Pattern shortDelimiter = Pattern.compile("^-d$");
         static Pattern longDelimiter = Pattern.compile("^--delimiter=.");
@@ -97,87 +97,80 @@ public class ArgParser {
         hasDelimiter = false;
     }
 
-    public Options parse() throws FileNotFoundException {
+    public Options parse() throws FileNotFoundException, BadArgumentsException, InvalidInputException, HelpInvokedException {
         Options options = new Options();
         cleanFlags();
         checkForHelp(args);
-        try {
-            for (int i = 0; i < args.length; i++) {
-                String arg = args[i];
-                ArgMatch argMatch = getArgMatch(arg);
-                switch (argMatch) {
-                    case ShortFromFormat -> {
-                        IOFormat format = matchFormat(getNextOption(args, i));
-                        setFormat(options, format, FromOrTo.From);
-                        i++;
-                    }
-                    case LongFromFormat -> {
-                        IOFormat format = matchFormat(extractOption(arg));
-                        setFormat(options, format, FromOrTo.From);
-                    }
-                    case FromOption -> {
-                        FromToOption fromToOption = matchOption(extractOption(arg));
-                        setOption(options, fromToOption, FromOrTo.From);
-                    }
-                    case ShortToFormat -> {
-                        IOFormat format = matchFormat(getNextOption(args, i));
-                        setFormat(options, format, FromOrTo.To);
-                        i++;
-                    }
-                    case LongToFormat -> {
-                        IOFormat format = matchFormat(extractOption(arg));
-                        setFormat(options, format, FromOrTo.To);
-                    }
-                    case ToOption -> {
-                        FromToOption fromToOption = matchOption(extractOption(arg));
-                        setOption(options, fromToOption, FromOrTo.To);
-                    }
-                    case ShortFromFile -> {
-                        String path = getNextOption(args, i);
-                        setFile(options, path, FromOrTo.From);
-                        i++;
-
-                    }
-                    case LongFromFile -> {
-                        String path = extractOption(arg);
-                        setFile(options, path, FromOrTo.From);
-                    }
-                    case ShortToFile -> {
-                        String path = getNextOption(args, i);
-                        setFile(options, path, FromOrTo.To);
-                        i++;
-
-                    }
-                    case LongToFile -> {
-                        String path = extractOption(arg);
-                        setFile(options, path, FromOrTo.To);
-
-                    }
-                    case ShortDelimiter -> {
-                        String delimiter = getNextOption(args, i);
-                        setDelimiter(options, delimiter);
-                        i++;
-
-                    }
-                    case LongDelimiter -> {
-                        String delimiter = extractOption(arg);
-                        setDelimiter(options, delimiter);
-                    }
-                    default -> throw new BadArgumentsException();
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            ArgMatch argMatch = getArgMatch(arg);
+            switch (argMatch) {
+                case ShortFromFormat -> {
+                    IOFormat format = matchFormat(getNextOption(args, i));
+                    setFormat(options, format, FromOrTo.From);
+                    i++;
                 }
+                case LongFromFormat -> {
+                    IOFormat format = matchFormat(extractOption(arg));
+                    setFormat(options, format, FromOrTo.From);
+                }
+                case FromOption -> {
+                    FromToOption fromToOption = matchOption(extractOption(arg));
+                    setOption(options, fromToOption, FromOrTo.From);
+                }
+                case ShortToFormat -> {
+                    IOFormat format = matchFormat(getNextOption(args, i));
+                    setFormat(options, format, FromOrTo.To);
+                    i++;
+                }
+                case LongToFormat -> {
+                    IOFormat format = matchFormat(extractOption(arg));
+                    setFormat(options, format, FromOrTo.To);
+                }
+                case ToOption -> {
+                    FromToOption fromToOption = matchOption(extractOption(arg));
+                    setOption(options, fromToOption, FromOrTo.To);
+                }
+                case ShortFromFile -> {
+                    String path = getNextOption(args, i);
+                    setFile(options, path, FromOrTo.From);
+                    i++;
+
+                }
+                case LongFromFile -> {
+                    String path = extractOption(arg);
+                    setFile(options, path, FromOrTo.From);
+                }
+                case ShortToFile -> {
+                    String path = getNextOption(args, i);
+                    setFile(options, path, FromOrTo.To);
+                    i++;
+
+                }
+                case LongToFile -> {
+                    String path = extractOption(arg);
+                    setFile(options, path, FromOrTo.To);
+
+                }
+                case ShortDelimiter -> {
+                    String delimiter = getNextOption(args, i);
+                    setDelimiter(options, delimiter);
+                    i++;
+
+                }
+                case LongDelimiter -> {
+                    String delimiter = extractOption(arg);
+                    setDelimiter(options, delimiter);
+                }
+                default -> throw new BadArgumentsException("Unknown argument");
             }
-            validateOptions(options);
-        } catch (BadArgumentsException e) {
-            PrintHelp();
-            System.exit(1);
-        } catch (InvalidInputException e) {
-            PrintHelp();
-            System.exit(2);
         }
+        validateOptions(options);
+
         return options;
     }
 
-    private static IOFormat matchFormat(String format) throws InvalidInputException {
+    private static IOFormat matchFormat(String format) throws BadArgumentsException {
         if (Patterns.bits.matcher(format).matches()) {
             return IOFormat.Bits;
         }
@@ -193,7 +186,7 @@ public class ArgParser {
         if (Patterns.array.matcher(format).matches()) {
             return IOFormat.Array;
         }
-        throw new InvalidInputException();
+        throw new BadArgumentsException("Invalid format");
     }
 
     private ArgMatch getArgMatch(String str) throws BadArgumentsException {
@@ -239,10 +232,10 @@ public class ArgParser {
         if (Patterns.longHelp.matcher(str).matches()) {
             return ArgMatch.Help;
         }
-        throw new BadArgumentsException();
+        throw new BadArgumentsException("Invalid argument provided");
     }
 
-    private static FromToOption matchOption(String option) throws InvalidInputException {
+    private static FromToOption matchOption(String option) throws BadArgumentsException {
         if (Patterns.big.matcher(option).matches()) {
             return FromToOption.Big;
         }
@@ -276,20 +269,20 @@ public class ArgParser {
         if (Patterns.binaryOption.matcher(option).matches()) {
             return FromToOption.Binary;
         }
-        throw new InvalidInputException();
+        throw new BadArgumentsException("Unknown option provided");
     }
 
 
-    private static String getNextOption(String[] options, int index) throws InvalidInputException {
+    private static String getNextOption(String[] options, int index) throws BadArgumentsException {
         if (index + 1 >= options.length) {
-            throw new InvalidInputException();
+            throw new BadArgumentsException("Not enough arguments provided");
         }
         return options[index + 1];
     }
 
     private static String extractOption(String option) throws IllegalArgumentException, IndexOutOfBoundsException {
         Matcher m = Patterns.extractor.matcher(option);
-        if(m.find()) {
+        if (m.find()) {
             return m.group(1);
         } else {
             throw new IllegalArgumentException();
@@ -306,7 +299,7 @@ public class ArgParser {
 
     private void setFormat(Options options, IOFormat format, FromOrTo fromOrTo) throws BadArgumentsException {
         if (this.hasFromFormat && (fromOrTo == FromOrTo.From) || this.hasToFormat && (fromOrTo == FromOrTo.To)) {
-            throw new BadArgumentsException();
+            throw new BadArgumentsException("Format set duplicity");
         }
         if (FromOrTo.From == fromOrTo) {
             this.hasFromFormat = true;
@@ -320,17 +313,17 @@ public class ArgParser {
 
     private void setFile(Options options, String path, FromOrTo fromOrTo) throws BadArgumentsException, FileNotFoundException, InvalidInputException {
         if (this.hasInputFile && (fromOrTo == FromOrTo.From) || this.hasOutputFile && (fromOrTo == FromOrTo.To)) {
-            throw new BadArgumentsException();
+            throw new BadArgumentsException("Already has file");
         }
         File file = new File(path);
         if (file.isDirectory()) {
-            throw new BadArgumentsException();
+            throw new BadArgumentsException("File is directory");
         }
         if (!file.canWrite() && fromOrTo == FromOrTo.To) {
-            throw new InvalidInputException();
+            throw new InvalidInputException("Can't write in file");
         }
         if (!file.canRead() && fromOrTo == FromOrTo.From) {
-            throw new InvalidInputException();
+            throw new InvalidInputException("Can't read from file");
         }
         if (FromOrTo.From == fromOrTo) {
             this.hasInputFile = true;
@@ -343,65 +336,64 @@ public class ArgParser {
 
     private void setDelimiter(Options options, String delimiter) throws BadArgumentsException {
         if (this.hasDelimiter) {
-            throw new BadArgumentsException();
+            throw new BadArgumentsException("Invalid program arguments");
         }
         this.hasDelimiter = true;
         options.setDelimiter(delimiter.charAt(0)); //TODO maybe set delimiter to string
     }
 
-    private void checkForHelp(String[] args) {
+    private void checkForHelp(String[] args) throws HelpInvokedException {
         for (String arg : args) {
             if (Patterns.shortHelp.matcher(arg).matches() || Patterns.longHelp.matcher(arg).matches()) {
-                PrintHelp();
-                System.exit(0);
+                throw new HelpInvokedException();
             }
         }
     }
 
     private static void validateOptions(Options options) throws BadArgumentsException {
         if (options.getInputFormat() == null || options.getOutputFormat() == null) {
-            throw new BadArgumentsException();
+            throw new BadArgumentsException("Invalid program arguments");
         }
         if (options.getInputFromToOption().isPresent() &&
                 (options.getInputFormat() != IOFormat.Int
                         && options.getInputFormat() != IOFormat.Bits
                 )) {
-            throw new BadArgumentsException();
+            throw new BadArgumentsException("Invalid program arguments");
         }
         if (options.getOutputFromToOption().isPresent() &&
                 (options.getOutputFormat() != IOFormat.Int
                         && options.getOutputFormat() != IOFormat.Array
                 )) {
-            throw new BadArgumentsException();
+            throw new BadArgumentsException("Invalid program arguments");
         }
         if (options.getBracketType().isPresent() && options.getOutputFormat() != IOFormat.Array) {
-            throw new BadArgumentsException();
+            throw new BadArgumentsException("Invalid program arguments");
         }
 
         if (options.getInputFromToOption().isPresent() &&
                 (options.getInputFormat() == IOFormat.Int
                         && (options.getInputFromToOption().get().ordinal() < FromToOption.Big.ordinal()
                         || options.getInputFromToOption().get().ordinal() > FromToOption.Little.ordinal()))) {
-            throw new BadArgumentsException();
+            throw new BadArgumentsException("Invalid program arguments");
         }
         if (options.getInputFromToOption().isPresent() &&
                 (options.getInputFormat() == IOFormat.Int
                         && (options.getInputFromToOption().get().ordinal() < FromToOption.Big.ordinal()
                         || options.getInputFromToOption().get().ordinal() > FromToOption.Little.ordinal()))) {
-            throw new BadArgumentsException();
+            throw new BadArgumentsException("Invalid program arguments");
         }
         if (options.getInputFromToOption().isPresent() &&
                 (options.getInputFormat() == IOFormat.Bits
                         && (options.getInputFromToOption().get().ordinal() < FromToOption.Left.ordinal()
                         || options.getInputFromToOption().get().ordinal() > FromToOption.Right.ordinal()))) {
-            throw new BadArgumentsException();
+            throw new BadArgumentsException("Invalid program arguments");
         }
 
         if (options.getOutputFromToOption().isPresent() &&
                 (options.getOutputFormat() == IOFormat.Array
                         && (options.getOutputFromToOption().get().ordinal() < FromToOption.Hex.ordinal()
                         || options.getOutputFromToOption().get().ordinal() > FromToOption.Binary.ordinal()))) {
-            throw new BadArgumentsException();
+            throw new BadArgumentsException("Invalid program arguments");
         }
     }
 }

@@ -2,11 +2,16 @@ package cz.muni.fi.pv286.mmt.repsentationParser;
 
 import cz.muni.fi.pv286.mmt.argParser.ArgParser;
 import cz.muni.fi.pv286.mmt.exceptions.BadArgumentsException;
+import cz.muni.fi.pv286.mmt.exceptions.HelpInvokedException;
 import cz.muni.fi.pv286.mmt.model.BracketType;
 import cz.muni.fi.pv286.mmt.model.FromToOption;
 import cz.muni.fi.pv286.mmt.model.IOFormat;
 import cz.muni.fi.pv286.mmt.model.Options;
 import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -137,13 +142,88 @@ public class ArgParserTest {
         }
     }
 
-/*
+
     @Test
-    public void failBytesOptionsTest() {
+    public void failDoubleSetTest() {
         String[] args = "-f bytes -t bytes --from-options=big".split("\\s+");
         ArgParser argParser = new ArgParser(args);
         assertThrows(BadArgumentsException.class, () -> argParser.parse());
     }
- */
 
+    @Test
+    public void invokeHelpShortTest() {
+        String[] args = "--from=bits --to=bits --help".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        assertThrows(HelpInvokedException.class, () -> argParser.parse());
+    }
+
+    @Test
+    public void invokeHelpLongTest() {
+        String[] args = "-h".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        assertThrows(HelpInvokedException.class, () -> argParser.parse());
+    }
+
+    @Test
+    public void failNoInputFormatGivenTest() {
+        String[] args = "-t bytes".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        assertThrows(BadArgumentsException.class, () -> argParser.parse());
+    }
+
+    @Test
+    public void failNoOutputFormatGivenTest() {
+        String[] args = "-f bytes".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        assertThrows(BadArgumentsException.class, () -> argParser.parse());
+    }
+    @Test
+    public void delimiterTest() {
+        String[] args = "--from=bits --to=bits --delimiter=,".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        try {
+            Options options = argParser.parse();
+            assertEquals( ',', options.getDelimiter());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void inputFileTest() {
+        File file = new File("testfile.txt");
+        try {
+            file.createNewFile();
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
+        String[] args = "--from=bits --to=bits --input=testfile.txt".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        try {
+            argParser.parse();
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+        file.delete();
+    }
+
+    @Test
+    public void outputFileTest() {
+        File file = new File("testfile.txt");
+        try {
+            file.createNewFile();
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
+        String[] args = "--from=bits --to=bits --output=testfile.txt".split("\\s+");
+        ArgParser argParser = new ArgParser(args);
+        try {
+            argParser.parse();
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+        file.delete();
+    }
 }
