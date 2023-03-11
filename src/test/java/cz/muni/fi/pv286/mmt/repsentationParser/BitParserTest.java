@@ -66,9 +66,9 @@ public class BitParserTest extends ParserTest{
         Options options = new Options();
         options.setInputFromToOption(FromToOption.Right);
 
-        assertConversion(options, BitParser.class, BitParser.class, "00000001".getBytes(), new byte[] {1});
-        assertConversion(options, BitParser.class, BitParser.class, "00000010".getBytes(), new byte[] {2});
-        assertConversion(options, BitParser.class, BitParser.class, "00000011".getBytes(), new byte[] {3});
+        assertConversion(options, BitParser.class, BitParser.class, "0".getBytes(), new byte[] {0});
+        assertConversion(options, BitParser.class, BitParser.class, "1".getBytes(), new byte[] {(byte) 128});
+        assertConversion(options, BitParser.class, BitParser.class, "11".getBytes(), new byte[] {(byte) 192});
     }
 
 }

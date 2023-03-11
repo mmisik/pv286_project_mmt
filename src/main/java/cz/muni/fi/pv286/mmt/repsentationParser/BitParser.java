@@ -4,6 +4,7 @@ import cz.muni.fi.pv286.mmt.model.FromToOption;
 import cz.muni.fi.pv286.mmt.model.Options;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -38,7 +39,11 @@ public class BitParser extends RepresentationParser {
             Arrays.fill(paddedBits, 0, 8 - remaining, padByte);
             System.arraycopy(bits, 0, paddedBits, 8 - remaining, bits.length);
         } else {
-            Arrays.fill(paddedBits, bits.length, paddedBits.length, padByte);
+            int padStart = bits.length;
+            int padEnd = paddedBits.length;
+            if (padEnd > padStart) {
+                Arrays.fill(paddedBits, padStart, padEnd, padByte);
+            }
             System.arraycopy(bits, 0, paddedBits, 0, bits.length);
         }
 
@@ -66,20 +71,42 @@ public class BitParser extends RepresentationParser {
         return results;
     }
 
+    public static byte[] binaryStringToBinaryBytes(String binary) {
+        int len = binary.length();
+        byte[] bytes = new byte[len / 8];
+        for (int i = 0; i < len; i += 8) {
+            bytes[i / 8] = (byte) Integer.parseInt(binary.substring(i, i + 8), 2);
+        }
+        return bytes;
+    }
+
+
+    public static String bytesToString(byte[] bytes) {
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
+
+
     @Override
     public void parseTo(byte[] bytes) throws IOException {
         final OutputStream output = options.getOutputFile();
         final InputStream input = new ByteArrayInputStream(bytes);
+        StringBuilder binaryString = new StringBuilder();
+
 
         while (true) {
-            int inputBit = input.read();
+            int inputByte = input.read();
 
-            if (inputBit == -1) {
+            if (inputByte == -1) {
                 break;
             }
+            String binary = String.format("%8s", Integer.toBinaryString(inputByte & 0xFF)).replace(' ', '0');
+            binaryString.append(binary);
 
-            output.write(inputBit);
         }
+
+        byte[] test = encodeToByteArray(padOutput(binaryString.toString().getBytes()));
+
+        output.write(encodeToByteArray(padOutput(binaryString.toString().getBytes())));
     }
 
     @Override
