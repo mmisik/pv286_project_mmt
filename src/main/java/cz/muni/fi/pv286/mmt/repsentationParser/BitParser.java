@@ -96,10 +96,17 @@ public class BitParser extends RepresentationParser {
                 break;
 
             if (inputBit != 48 && inputBit != 49) {
-                continue;
+                if (inputBit == 32)
+                    continue;
+
+                throw new IOException("Invalid character found");
             }
 
             output.write(inputBit);
+        }
+
+        if (output.size() == 0){
+            throw new IOException("No input found");
         }
 
         return encodeToByteArray(padOutput(output.toByteArray()));
