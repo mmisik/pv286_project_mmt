@@ -22,6 +22,5 @@ class ByteParserTest extends ParserTest {
     }
     @Test
     public void fromBytesToBitsTest() {
-        assertConversion(ByteParser.class, BitParser.class, "OK".getBytes(), new byte[] {(byte) 79, (byte) 75});
-    }
+        assertConversion(ByteParser.class, BitParser.class, "OK".getBytes(), "0100111101001011".getBytes());    }
 }
