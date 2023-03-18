@@ -24,6 +24,7 @@ public class ByteParser extends RepresentationParser {
             }
 
             output.write(readByte);
+            output.flush();
         }
     }
 
