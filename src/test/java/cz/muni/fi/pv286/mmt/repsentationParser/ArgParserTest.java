@@ -10,6 +10,7 @@ import cz.muni.fi.pv286.mmt.model.Options;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -231,17 +232,12 @@ public class ArgParserTest {
     }
 
     private File getTestFile() {
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 10;
-        Random random = new Random();
+        try {
+            return File.createTempFile("panbyte-test", ".txt");
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
 
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .limit(targetStringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-
-        String tmpdir = System.getProperty("java.io.tmpdir");
-        return new File(tmpdir + "/" + generatedString + ".txt");
+        throw new RuntimeException("Could not create test file");
     }
 }
