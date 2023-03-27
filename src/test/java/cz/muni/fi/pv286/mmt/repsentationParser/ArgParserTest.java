@@ -10,8 +10,11 @@ import cz.muni.fi.pv286.mmt.model.Options;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -191,14 +194,14 @@ public class ArgParserTest {
 
     @Test
     public void inputFileTest() {
-        File file = new File("testfile.txt");
+        File file = getTestFile();
         try {
             file.createNewFile();
         } catch (Exception e) {
             fail(e.getMessage());
         }
 
-        String[] args = "--from=bits --to=bits --input=testfile.txt".split("\\s+");
+        String[] args = ("--from=bits --to=bits --input="+ file.getAbsolutePath()).split("\\s+");
         ArgParser argParser = new ArgParser(args);
         try {
             argParser.parse();
@@ -210,14 +213,14 @@ public class ArgParserTest {
 
     @Test
     public void outputFileTest() {
-        File file = new File("testfile.txt");
+        File file = getTestFile();
         try {
             file.createNewFile();
         } catch (Exception e) {
             fail(e.getMessage());
         }
 
-        String[] args = "--from=bits --to=bits --output=testfile.txt".split("\\s+");
+        String[] args = ("--from=bits --to=bits --output=" + file.getAbsolutePath()).split("\\s+");
         ArgParser argParser = new ArgParser(args);
         try {
             argParser.parse();
@@ -225,5 +228,20 @@ public class ArgParserTest {
             fail(e.getMessage());
         }
         file.delete();
+    }
+
+    private File getTestFile() {
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        String tmpdir = System.getProperty("java.io.tmpdir");
+        return new File(tmpdir + "/" + generatedString + ".txt");
     }
 }
