@@ -196,11 +196,6 @@ public class ArgParserTest {
     @Test
     public void inputFileTest() {
         File file = getTestFile();
-        try {
-            file.createNewFile();
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
 
         String[] args = ("--from=bits --to=bits --input="+ file.getAbsolutePath()).split("\\s+");
         ArgParser argParser = new ArgParser(args);
@@ -209,17 +204,13 @@ public class ArgParserTest {
         } catch (Exception e) {
             fail(e.getMessage());
         }
-        file.delete();
+
+        file.deleteOnExit();
     }
 
     @Test
     public void outputFileTest() {
         File file = getTestFile();
-        try {
-            file.createNewFile();
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
 
         String[] args = ("--from=bits --to=bits --output=" + file.getAbsolutePath()).split("\\s+");
         ArgParser argParser = new ArgParser(args);
@@ -228,7 +219,8 @@ public class ArgParserTest {
         } catch (Exception e) {
             fail(e.getMessage());
         }
-        file.delete();
+
+        file.deleteOnExit();
     }
 
     private File getTestFile() {
