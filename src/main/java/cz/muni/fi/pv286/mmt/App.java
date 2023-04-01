@@ -1,6 +1,6 @@
 package cz.muni.fi.pv286.mmt;
 
-import cz.muni.fi.pv286.mmt.argParser.ArgParser;
+import cz.muni.fi.pv286.mmt.arg_parser.ArgParser;
 import cz.muni.fi.pv286.mmt.exceptions.BadArgumentsException;
 import cz.muni.fi.pv286.mmt.exceptions.HelpInvokedException;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidInputException;
@@ -67,7 +67,6 @@ public class App
             exit(0);
         } catch (Exception e) {
             System.err.println("Unexpected error");
-            e.printStackTrace();
             exit(4);
         }
     }
