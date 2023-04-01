@@ -104,8 +104,6 @@ public class BitParser extends RepresentationParser {
 
         }
 
-//        byte[] test = padOutput(binaryString.toString().getBytes());
-
         output.write(binaryString.toString().getBytes());
     }
 
