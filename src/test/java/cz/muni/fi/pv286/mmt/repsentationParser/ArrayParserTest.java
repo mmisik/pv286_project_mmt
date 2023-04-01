@@ -49,11 +49,13 @@ public class ArrayParserTest extends ParserTest {
 
     @Test
     public void noInputTest() {
+        // TODO: Fix me!
         assertRoundTrip(ArrayParser.class, "{}".getBytes());
     }
 
     @Test
     public void nestedInputTest() {
+        // TODO: fix me!
         assertRoundTrip(ArrayParser.class, "{{0x01, (2), [3, 0b100, 0x05],'\\x06'}}".getBytes(), "{{1, {2}, {3, 4, 5}, 6}}".getBytes());
     }
 
