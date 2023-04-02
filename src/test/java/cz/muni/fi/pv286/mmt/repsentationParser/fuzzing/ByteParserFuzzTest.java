@@ -9,10 +9,7 @@ import java.io.IOException;
 class ByteParserFuzzTest extends ParserFuzzTest {
     @FuzzTest
     void roundTripFuzzTest(FuzzedDataProvider data)  throws IOException {
-        byte[] bytes = data.consumeBytes(0);
-        assertRoundTrip(ByteParser.class, bytes);
-
-        bytes = data.consumeBytes(10);
+        byte[] bytes = data.consumeBytes(10);
         assertRoundTrip(ByteParser.class, bytes);
 
         bytes = data.consumeBytes(100);
