@@ -19,7 +19,14 @@ public class HexParserFuzzTest extends ParserTest {
         bytes = data.consumeBytes(1000);
         assertRoundTrip(HexParser.class, bytes);
 
-        bytes = data.consumeRemainingAsBytes();
+        // check if the remaining bytes are even
+        int remainingBytes = data.remainingBytes();
+        if (remainingBytes % 2 != 0) {
+            remainingBytes--;
+        }
+
+        bytes = data.consumeBytes(remainingBytes);
+
         assertRoundTrip(HexParser.class, bytes);
     }
 }
