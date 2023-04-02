@@ -1,5 +1,7 @@
 package cz.muni.fi.pv286.mmt.repsentationParser;
 
+import cz.muni.fi.pv286.mmt.exceptions.InvalidBitCharacterException;
+import cz.muni.fi.pv286.mmt.exceptions.InvalidBitInputException;
 import cz.muni.fi.pv286.mmt.model.FromToOption;
 import cz.muni.fi.pv286.mmt.model.Options;
 
@@ -122,18 +124,18 @@ public class BitParser extends RepresentationParser {
             if (inputBit == -1)
                 break;
 
-            if (inputBit != 48 && inputBit != 49) {
-                if (inputBit == 32)
+            if (inputBit != 48 && inputBit != 49) { // 48 = '0', 49 = '1'
+                if (inputBit == 32) // 32 = ' '
                     continue;
 
-                throw new IOException("Invalid character found");
+                throw new InvalidBitCharacterException();
             }
 
             output.write(inputBit);
         }
 
-        if (output.size() == 0){
-            throw new IOException("No input found");
+        if (output.size() == 0 || output.size() % 8 != 0){
+            throw new InvalidBitInputException();
         }
 
         return encodeToByteArray(padOutput(output.toByteArray()));
