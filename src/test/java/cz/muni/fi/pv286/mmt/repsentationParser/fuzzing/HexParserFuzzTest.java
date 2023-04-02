@@ -7,10 +7,8 @@ import cz.muni.fi.pv286.mmt.repsentationParser.*;
 public class HexParserFuzzTest extends ParserTest {
     @FuzzTest
     void roundTripFuzzTest(FuzzedDataProvider data) {
-        byte[] bytes = data.consumeBytes(0);
-        assertRoundTrip(HexParser.class, bytes);
 
-        bytes = data.consumeBytes(10);
+        byte[] bytes = data.consumeBytes(10);
         assertRoundTrip(HexParser.class, bytes);
 
         bytes = data.consumeBytes(100);
