@@ -2,10 +2,12 @@ package cz.muni.fi.pv286.mmt.repsentationParser;
 
 import cz.muni.fi.pv286.mmt.model.BracketType;
 import cz.muni.fi.pv286.mmt.model.FromToOption;
+import cz.muni.fi.pv286.mmt.model.IOFormat;
 import cz.muni.fi.pv286.mmt.model.Options;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,17 +43,47 @@ public class ArrayParser extends RepresentationParser {
         return "}";
     }
 
+    private boolean isClosingBracket(byte b) {
+        char c = (char) b;
+        return c == ')' || c == ']' || c == '}';
+    }
+
     private String formatOutput(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         FromToOption outputOption = options.getOutputFromToOption().orElse(FromToOption.Hex);
         BracketType bracketType = options.getBracketType().orElse(BracketType.CurlyBracket);
 
-        sb.append(getOpeningBracket(bracketType));
+        boolean possibleComma = false;
 
-        for (int i = 0; i < bytes.length; i++) {
-            byte b = bytes[i];
-            if (i != 0) {
+        if (options.getInputFormat() != IOFormat.Array) {
+            sb.append(getOpeningBracket(bracketType));
+        }
+
+        for (int index = 0; index < bytes.length; index++) {
+            boolean isBracket = false;
+            byte b = bytes[index];
+
+            if (possibleComma && !(isClosingBracket(bytes[index]))) {
                 sb.append(", ");
+            }
+
+            switch ((char) bytes[index]) {
+                case '{', '[', '(' -> {
+                    sb.append(getOpeningBracket(bracketType));
+                    isBracket = true;
+                    possibleComma = false;
+                }
+
+                case '}', ']', ')' -> {
+                    sb.append(getClosingBracket(bracketType));
+                    isBracket = true;
+                    possibleComma = true;
+                }
+
+            }
+
+            if (isBracket){
+                continue;
             }
 
             if (outputOption == FromToOption.Hex) {
@@ -63,14 +95,19 @@ public class ArrayParser extends RepresentationParser {
             } else if (outputOption == FromToOption.Binary) {
                 sb.append("0b").append(Integer.toBinaryString(b & 0xff).replaceFirst("^0+(?!$)", ""));
             }
+
+            possibleComma = true;
         }
 
-        sb.append(getClosingBracket(bracketType));
+        if (options.getInputFormat() != IOFormat.Array) {
+            sb.append(getClosingBracket(bracketType));
+        }
+
         return sb.toString();
     }
 
     private byte[] parseArray(String input) throws IOException {
-        Pattern valuePattern = Pattern.compile("((0b[01]+)|(0x[0-9a-fA-F]+)|(\\\\x[0-9a-fA-F]{2})|(\\b[0-9]+\\b))");
+        Pattern valuePattern = Pattern.compile("(([\\[\\{\\(\\]\\}\\)])|(0b[01]+)|(0x[0-9a-fA-F]+)|(\\\\x[0-9a-fA-F]{2})|(\\b(?!\\w*[a-zA-Z]\\w*)[0-9]+\\b))");
         Matcher valueMatcher = valuePattern.matcher(input);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
@@ -80,7 +117,11 @@ public class ArrayParser extends RepresentationParser {
             matched = true;
             String value = valueMatcher.group(1);
 
-            if (value.startsWith("0x")) {
+            if ("{[()]}".contains(value)){
+                if (options.getOutputFormat() == IOFormat.Array) {
+                    byteArrayOutputStream.write(value.getBytes());
+                }
+            } else if (value.startsWith("0x")) {
                 byteArrayOutputStream.write(Integer.parseInt(value.substring(2), 16));
             } else if (value.startsWith("0b")) {
                 byteArrayOutputStream.write(Integer.parseInt(value.substring(2), 2));
