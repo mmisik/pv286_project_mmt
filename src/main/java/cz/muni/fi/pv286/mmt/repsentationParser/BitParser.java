@@ -16,7 +16,7 @@ public class BitParser extends RepresentationParser {
         super(options);
     }
 
-    private byte[] padOutput(byte[] bits) {
+    public static byte[] padOutput(Optional<FromToOption> inputFromToOption, byte[] bits) {
         int remaining = bits.length % 8;
         byte padByte = 48;
 
@@ -26,13 +26,12 @@ public class BitParser extends RepresentationParser {
 
         byte[] paddedBits = new byte[bits.length + (8 - remaining)];
 
-        Optional<FromToOption> inputFromToOption = this.options.getInputFromToOption();
         FromToOption direction;
 
         try {
             direction = inputFromToOption.orElse(FromToOption.Left);
         }
-        catch(NullPointerException e) {
+        catch (NullPointerException e) {
             direction = FromToOption.Left;
         }
 
@@ -134,10 +133,14 @@ public class BitParser extends RepresentationParser {
             output.write(inputBit);
         }
 
-        if (output.size() == 0 || output.size() % 8 != 0){
+        if (output.size() == 0) {
             throw new InvalidBitInputException();
         }
 
-        return encodeToByteArray(padOutput(output.toByteArray()));
+        byte[] padded = padOutput(options.getInputFromToOption(), output.toByteArray());
+        String str = new String(padded, StandardCharsets.UTF_8);
+        System.out.println(str);
+
+        return encodeToByteArray(padded);
     }
 }
