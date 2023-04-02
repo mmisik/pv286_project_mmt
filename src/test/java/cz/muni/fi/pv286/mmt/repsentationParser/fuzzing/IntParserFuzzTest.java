@@ -4,9 +4,11 @@ import com.code_intelligence.jazzer.api.FuzzedDataProvider;
 import com.code_intelligence.jazzer.junit.FuzzTest;
 import cz.muni.fi.pv286.mmt.repsentationParser.*;
 
-class IntParserFuzzTest extends ParserTest {
+import java.io.IOException;
+
+class IntParserFuzzTest extends ParserFuzzTest {
     @FuzzTest
-    void roundTripFuzzTest(FuzzedDataProvider data) {
+    void roundTripFuzzTest(FuzzedDataProvider data) throws IOException {
         byte[] bytes = data.consumeBytes(0);
         assertRoundTrip(IntParser.class, bytes);
 

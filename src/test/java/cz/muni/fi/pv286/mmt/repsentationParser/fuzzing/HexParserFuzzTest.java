@@ -2,34 +2,34 @@ package cz.muni.fi.pv286.mmt.repsentationParser.fuzzing;
 
 import com.code_intelligence.jazzer.api.FuzzedDataProvider;
 import com.code_intelligence.jazzer.junit.FuzzTest;
+import cz.muni.fi.pv286.mmt.exceptions.InvalidHexCharacterException;
+import cz.muni.fi.pv286.mmt.exceptions.InvalidHexCountException;
 import cz.muni.fi.pv286.mmt.repsentationParser.*;
 
-public class HexParserFuzzTest extends ParserTest {
+import java.io.IOException;
+
+public class HexParserFuzzTest extends ParserFuzzTest {
     @FuzzTest
-    void roundTripFuzzTest(FuzzedDataProvider data) {
+    void roundTripFuzzTest(FuzzedDataProvider data) throws IOException {
 
-        byte[] bytes = fixBytesLength(data.consumeBytes(10));
-        assertRoundTrip(HexParser.class, bytes);
+        try {
+            String bytes = data.consumeString(10);
+            assertRoundTrip(HexParser.class, bytes.getBytes(), sanitize(bytes));
 
-        bytes = fixBytesLength(data.consumeBytes(100));
-        assertRoundTrip(HexParser.class, bytes);
+            bytes = data.consumeString(100);
+            assertRoundTrip(HexParser.class, bytes.getBytes(), sanitize(bytes));
 
-        bytes = fixBytesLength(data.consumeBytes(1000));
-        assertRoundTrip(HexParser.class, bytes);
+            bytes = data.consumeString(1000);
+            assertRoundTrip(HexParser.class, bytes.getBytes(), sanitize(bytes));
 
-        bytes = fixBytesLength(data.consumeRemainingAsBytes());
-        assertRoundTrip(HexParser.class, bytes);
+            bytes = data.consumeRemainingAsString();
+            assertRoundTrip(HexParser.class, bytes.getBytes(), sanitize(bytes));
+        } catch (InvalidHexCharacterException | InvalidHexCountException e) {
+            // Ignore
+        }
     }
 
-    private byte[] fixBytesLength(byte[] bytes) {
-        if (bytes.length % 2 != 0) {
-
-            byte[] newBytes = new byte[bytes.length + 1];
-            System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
-
-            return newBytes;
-        }
-
-        return bytes;
+    private byte[] sanitize(String bytes) {
+        return bytes.toLowerCase().replace(" ", "").getBytes();
     }
 }
