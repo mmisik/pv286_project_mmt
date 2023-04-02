@@ -8,23 +8,28 @@ public class HexParserFuzzTest extends ParserTest {
     @FuzzTest
     void roundTripFuzzTest(FuzzedDataProvider data) {
 
-        byte[] bytes = data.consumeBytes(10);
+        byte[] bytes = fixBytesLength(data.consumeBytes(10));
         assertRoundTrip(HexParser.class, bytes);
 
-        bytes = data.consumeBytes(100);
+        bytes = fixBytesLength(data.consumeBytes(100));
         assertRoundTrip(HexParser.class, bytes);
 
-        bytes = data.consumeBytes(1000);
+        bytes = fixBytesLength(data.consumeBytes(1000));
         assertRoundTrip(HexParser.class, bytes);
 
-        // check if the remaining bytes are even
-        int remainingBytes = data.remainingBytes();
-        if (remainingBytes % 2 != 0) {
-            remainingBytes--;
+        bytes = fixBytesLength(data.consumeRemainingAsBytes());
+        assertRoundTrip(HexParser.class, bytes);
+    }
+
+    private byte[] fixBytesLength(byte[] bytes) {
+        if (bytes.length % 2 != 0) {
+
+            byte[] newBytes = new byte[bytes.length + 1];
+            System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
+
+            return newBytes;
         }
 
-        bytes = data.consumeBytes(remainingBytes);
-
-        assertRoundTrip(HexParser.class, bytes);
+        return bytes;
     }
 }
