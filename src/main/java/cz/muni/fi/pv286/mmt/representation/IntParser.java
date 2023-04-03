@@ -1,21 +1,18 @@
-package cz.muni.fi.pv286.mmt.repsentationParser;
+package cz.muni.fi.pv286.mmt.representation;
 
 import cz.muni.fi.pv286.mmt.exceptions.InvalidIntCountException;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidIntInputException;
 import cz.muni.fi.pv286.mmt.model.FromToOption;
 import cz.muni.fi.pv286.mmt.model.Options;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
+/**
+ * Int parser.
+ */
 public class IntParser extends RepresentationParser {
-
-    private enum Endian {
-        LITTLE,
-        BIG
-    }
 
     public IntParser(Options options) {
         super(options);
@@ -27,14 +24,14 @@ public class IntParser extends RepresentationParser {
 
     private byte[] getBytesFromInteger(int integer, Endian endian) {
         if (endian == Endian.BIG) {
-            return new byte[] {
+            return new byte[]{
                     (byte) (integer >> 24),
                     (byte) (integer >> 16),
                     (byte) (integer >> 8),
                     (byte) integer
             };
         } else {
-            return new byte[] {
+            return new byte[]{
                     (byte) integer,
                     (byte) (integer >> 8),
                     (byte) (integer >> 16),
@@ -79,7 +76,10 @@ public class IntParser extends RepresentationParser {
         }
 
         // Java doesn't have unsigned types, so we need to apply a mask to every byte
-        long integer = ((long) (bytesToWrite[0] & 0xff) << 24) + ((bytesToWrite[1] & 0xff) << 16) + ((bytesToWrite[2] & 0xff) << 8) + (bytesToWrite[3] & 0xff);
+        long integer = ((long) (bytesToWrite[0] & 0xff) << 24)
+                + ((bytesToWrite[1] & 0xff) << 16)
+                + ((bytesToWrite[2] & 0xff) << 8)
+                + (bytesToWrite[3] & 0xff);
         byte[] integerAsString = String.valueOf(integer).getBytes();
 
         options.getOutputFile().write(integerAsString);
@@ -113,7 +113,7 @@ public class IntParser extends RepresentationParser {
                 throw new InvalidIntCountException("Integer of this length would overflow.");
             }
 
-            integerBuilder.append((char)readByte);
+            integerBuilder.append((char) readByte);
         }
 
         int integer;
@@ -133,5 +133,10 @@ public class IntParser extends RepresentationParser {
         }
 
         return getBytesFromInteger(integer, endian);
+    }
+
+    private enum Endian {
+        LITTLE,
+        BIG
     }
 }

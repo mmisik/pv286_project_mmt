@@ -1,6 +1,9 @@
 package cz.muni.fi.pv286.mmt.model;
 
-public enum IOFormat {
+/**
+ * Enum for parser types.
+ */
+public enum IoFormat {
     Bytes,
     Hex,
     Int,

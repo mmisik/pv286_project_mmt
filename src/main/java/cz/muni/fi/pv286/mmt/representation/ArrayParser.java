@@ -1,17 +1,17 @@
-package cz.muni.fi.pv286.mmt.repsentationParser;
+package cz.muni.fi.pv286.mmt.representation;
 
 import cz.muni.fi.pv286.mmt.model.BracketType;
 import cz.muni.fi.pv286.mmt.model.FromToOption;
-import cz.muni.fi.pv286.mmt.model.IOFormat;
+import cz.muni.fi.pv286.mmt.model.IoFormat;
 import cz.muni.fi.pv286.mmt.model.Options;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Array parser.
+ */
 public class ArrayParser extends RepresentationParser {
 
     public ArrayParser(Options options) {
@@ -19,11 +19,11 @@ public class ArrayParser extends RepresentationParser {
     }
 
     private String getOpeningBracket(BracketType bracketType) {
-        if (bracketType == BracketType.SquareBracket){
+        if (bracketType == BracketType.SquareBracket) {
             return "[";
         }
 
-        if (bracketType == BracketType.RegularBracket){
+        if (bracketType == BracketType.RegularBracket) {
             return "(";
         }
 
@@ -32,11 +32,11 @@ public class ArrayParser extends RepresentationParser {
 
 
     private String getClosingBracket(BracketType bracketType) {
-        if (bracketType == BracketType.SquareBracket){
+        if (bracketType == BracketType.SquareBracket) {
             return "]";
         }
 
-        if (bracketType == BracketType.RegularBracket){
+        if (bracketType == BracketType.RegularBracket) {
             return ")";
         }
 
@@ -55,7 +55,7 @@ public class ArrayParser extends RepresentationParser {
 
         boolean possibleComma = false;
 
-        if (options.getInputFormat() != IOFormat.Array) {
+        if (options.getInputFormat() != IoFormat.Array) {
             sb.append(getOpeningBracket(bracketType));
         }
 
@@ -80,9 +80,12 @@ public class ArrayParser extends RepresentationParser {
                     possibleComma = true;
                 }
 
+                default -> {
+                    // Ignore
+                }
             }
 
-            if (isBracket){
+            if (isBracket) {
                 continue;
             }
 
@@ -93,21 +96,28 @@ public class ArrayParser extends RepresentationParser {
             } else if (outputOption == FromToOption.Character) {
                 sb.append(String.format("'%s'", (char) b));
             } else if (outputOption == FromToOption.Binary) {
-                sb.append("0b").append(Integer.toBinaryString(b & 0xff).replaceFirst("^0+(?!$)", ""));
+                sb.append("0b").append(Integer.toBinaryString(b & 0xff)
+                        .replaceFirst("^0+(?!$)", ""));
             }
 
             possibleComma = true;
         }
 
-        if (options.getInputFormat() != IOFormat.Array) {
+        if (options.getInputFormat() != IoFormat.Array) {
             sb.append(getClosingBracket(bracketType));
         }
 
         return sb.toString();
     }
 
-    private byte[] parseArray(String input) throws IOException {
-        Pattern valuePattern = Pattern.compile("(([\\[\\{\\(\\]\\}\\)])|(0b[01]+)|(0x[0-9a-fA-F]+)|(\\\\x[0-9a-fA-F]{2})|(\\b(?!\\w*[a-zA-Z]\\w*)[0-9]+\\b))");
+    private byte[] parseArray(String input)
+            throws IOException {
+        Pattern valuePattern = Pattern.compile(
+                "(([\\[\\{\\(\\]\\}\\)])|"
+                        + "(0b[01]+)|(0x[0-9a-fA-F]+)|"
+                        + "(\\\\x[0-9a-fA-F]{2})|"
+                        + "(\\b(?!\\w*[a-zA-Z]\\w*)[0-9]+\\b))"
+        );
         Matcher valueMatcher = valuePattern.matcher(input);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
@@ -117,8 +127,8 @@ public class ArrayParser extends RepresentationParser {
             matched = true;
             String value = valueMatcher.group(1);
 
-            if ("{[()]}".contains(value)){
-                if (options.getOutputFormat() == IOFormat.Array) {
+            if ("{[()]}".contains(value)) {
+                if (options.getOutputFormat() == IoFormat.Array) {
                     byteArrayOutputStream.write(value.getBytes());
                 }
             } else if (value.startsWith("0x")) {
@@ -132,7 +142,7 @@ public class ArrayParser extends RepresentationParser {
             }
         }
 
-        if (!matched){
+        if (!matched) {
             throw new IOException("Invalid input values.");
         }
 

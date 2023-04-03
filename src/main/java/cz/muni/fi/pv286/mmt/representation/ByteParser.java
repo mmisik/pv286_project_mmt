@@ -1,9 +1,14 @@
-package cz.muni.fi.pv286.mmt.repsentationParser;
+package cz.muni.fi.pv286.mmt.representation;
 
 import cz.muni.fi.pv286.mmt.model.Options;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import java.io.*;
-
+/**
+ * Byte parser.
+ */
 public class ByteParser extends RepresentationParser {
 
     public ByteParser(Options options) {

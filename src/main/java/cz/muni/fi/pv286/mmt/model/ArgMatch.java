@@ -1,5 +1,8 @@
 package cz.muni.fi.pv286.mmt.model;
 
+/**
+ * Enum for matching arguments.
+ */
 public enum ArgMatch {
     ShortFromFormat,
     LongFromFormat,

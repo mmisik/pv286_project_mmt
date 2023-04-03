@@ -1,21 +1,30 @@
-package cz.muni.fi.pv286.mmt.repsentationParser;
+package cz.muni.fi.pv286.mmt.representation;
 
 import cz.muni.fi.pv286.mmt.exceptions.InvalidBitCharacterException;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidBitInputException;
 import cz.muni.fi.pv286.mmt.model.FromToOption;
 import cz.muni.fi.pv286.mmt.model.Options;
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
 
+/**
+ * Bit parser.
+ */
 public class BitParser extends RepresentationParser {
 
     public BitParser(Options options) {
         super(options);
     }
 
+    /**
+     * Static method to allow padding of bytes from left or right.
+     */
     public static byte[] padOutput(Optional<FromToOption> inputFromToOption, byte[] bits) {
         int remaining = bits.length % 8;
         byte padByte = 48;
@@ -30,8 +39,7 @@ public class BitParser extends RepresentationParser {
 
         try {
             direction = inputFromToOption.orElse(FromToOption.Left);
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             direction = FromToOption.Left;
         }
 
@@ -72,27 +80,11 @@ public class BitParser extends RepresentationParser {
         return results;
     }
 
-    public static byte[] binaryStringToBinaryBytes(String binary) {
-        int len = binary.length();
-        byte[] bytes = new byte[len / 8];
-        for (int i = 0; i < len; i += 8) {
-            bytes[i / 8] = (byte) Integer.parseInt(binary.substring(i, i + 8), 2);
-        }
-        return bytes;
-    }
-
-
-    public static String bytesToString(byte[] bytes) {
-        return new String(bytes, StandardCharsets.UTF_8);
-    }
-
-
     @Override
     public void parseTo(byte[] bytes) throws IOException {
         final OutputStream output = options.getOutputFile();
         final InputStream input = new ByteArrayInputStream(bytes);
         StringBuilder binaryString = new StringBuilder();
-
 
         while (true) {
             int inputByte = input.read();
@@ -100,7 +92,8 @@ public class BitParser extends RepresentationParser {
             if (inputByte == -1) {
                 break;
             }
-            String binary = String.format("%8s", Integer.toBinaryString(inputByte & 0xFF)).replace(' ', '0');
+            String binary = String.format("%8s", Integer.toBinaryString(inputByte & 0xFF))
+                    .replace(' ', '0');
             binaryString.append(binary);
 
         }
@@ -118,12 +111,15 @@ public class BitParser extends RepresentationParser {
         while (true) {
             int inputBit = input.read();
 
-            if (inputBit == -1)
+            if (inputBit == -1) {
                 break;
+            }
 
             if (inputBit != 48 && inputBit != 49) { // 48 = '0', 49 = '1'
-                if (inputBit == 32) // 32 = ' '
+
+                if (inputBit == 32) { // 32 = ' '
                     continue;
+                }
 
                 throw new InvalidBitCharacterException();
             }
@@ -136,7 +132,6 @@ public class BitParser extends RepresentationParser {
         }
 
         byte[] padded = padOutput(options.getInputFromToOption(), output.toByteArray());
-        String str = new String(padded, StandardCharsets.UTF_8);
 
         return encodeToByteArray(padded);
     }

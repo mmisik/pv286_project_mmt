@@ -1,12 +1,11 @@
-package cz.muni.fi.pv286.mmt.repsentationParser.fuzzing;
+package cz.muni.fi.pv286.mmt.representation.fuzzing;
 
 import cz.muni.fi.pv286.mmt.model.Options;
-import cz.muni.fi.pv286.mmt.repsentationParser.RepresentationParser;
+import cz.muni.fi.pv286.mmt.representation.RepresentationParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.fail;

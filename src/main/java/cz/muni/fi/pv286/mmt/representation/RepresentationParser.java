@@ -1,11 +1,14 @@
-package cz.muni.fi.pv286.mmt.repsentationParser;
+package cz.muni.fi.pv286.mmt.representation;
 
 import cz.muni.fi.pv286.mmt.model.Options;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Abstract class for representation parsers.
+ * Provides common functionality of reading and writing input and output in parsers.
+ */
 public abstract class RepresentationParser {
 
     protected final Options options;
@@ -14,7 +17,8 @@ public abstract class RepresentationParser {
         this.options = options;
     }
 
-    // TODO: make this streamable / allocate in blocks to avoid allocating a big chunk of memory at once
+    // TODO: make this streamable
+    //  or allocate in blocks to avoid allocating a big chunk of memory at once
     protected byte[] getInput() throws IOException {
         InputStream inputStream = options.getInputFile();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
