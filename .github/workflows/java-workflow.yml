@@ -23,7 +23,9 @@ jobs:
         run: mvn install
 
       - name: Run CIFuzz
-        run: JAZZER_FUZZ=1 && mvn surefire:test
+        env:
+          JAZZER_FUZZ: 1
+        run: mvn install surefire:test -Dtest="*FuzzTest"
       
       - name: Run Integration.py
         run: python -m unittest discover -v -s . -p integration.py
