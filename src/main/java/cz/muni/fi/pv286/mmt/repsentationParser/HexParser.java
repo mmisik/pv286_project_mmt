@@ -1,5 +1,7 @@
 package cz.muni.fi.pv286.mmt.repsentationParser;
 
+import cz.muni.fi.pv286.mmt.exceptions.InvalidHexCharacterException;
+import cz.muni.fi.pv286.mmt.exceptions.InvalidHexCountException;
 import cz.muni.fi.pv286.mmt.model.Options;
 
 import java.io.*;
@@ -71,11 +73,11 @@ public class HexParser extends RepresentationParser {
             }
 
             if (readByte2 == -1) {
-                throw new IOException("Input is not a multiple of 2.");
+                throw new InvalidHexCountException();
             }
 
             if (!isHex((char) readByte1) || !isHex((char) readByte2)) {
-                throw new IOException("Invalid hex characters encountered.");
+                throw new InvalidHexCharacterException();
             }
 
             byte hexByte = getByteFromHex((char) readByte1, (char) readByte2);

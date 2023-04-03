@@ -1,5 +1,7 @@
 package cz.muni.fi.pv286.mmt.repsentationParser;
 
+import cz.muni.fi.pv286.mmt.exceptions.InvalidBitCharacterException;
+import cz.muni.fi.pv286.mmt.exceptions.InvalidBitInputException;
 import cz.muni.fi.pv286.mmt.model.FromToOption;
 import cz.muni.fi.pv286.mmt.model.Options;
 
@@ -14,7 +16,7 @@ public class BitParser extends RepresentationParser {
         super(options);
     }
 
-    private byte[] padOutput(byte[] bits) {
+    public static byte[] padOutput(Optional<FromToOption> inputFromToOption, byte[] bits) {
         int remaining = bits.length % 8;
         byte padByte = 48;
 
@@ -24,13 +26,12 @@ public class BitParser extends RepresentationParser {
 
         byte[] paddedBits = new byte[bits.length + (8 - remaining)];
 
-        Optional<FromToOption> inputFromToOption = this.options.getInputFromToOption();
         FromToOption direction;
 
         try {
             direction = inputFromToOption.orElse(FromToOption.Left);
         }
-        catch(NullPointerException e) {
+        catch (NullPointerException e) {
             direction = FromToOption.Left;
         }
 
@@ -122,20 +123,23 @@ public class BitParser extends RepresentationParser {
             if (inputBit == -1)
                 break;
 
-            if (inputBit != 48 && inputBit != 49) {
-                if (inputBit == 32)
+            if (inputBit != 48 && inputBit != 49) { // 48 = '0', 49 = '1'
+                if (inputBit == 32) // 32 = ' '
                     continue;
 
-                throw new IOException("Invalid character found");
+                throw new InvalidBitCharacterException();
             }
 
             output.write(inputBit);
         }
 
-        if (output.size() == 0){
-            throw new IOException("No input found");
+        if (output.size() == 0) {
+            throw new InvalidBitInputException();
         }
 
-        return encodeToByteArray(padOutput(output.toByteArray()));
+        byte[] padded = padOutput(options.getInputFromToOption(), output.toByteArray());
+        String str = new String(padded, StandardCharsets.UTF_8);
+
+        return encodeToByteArray(padded);
     }
 }
