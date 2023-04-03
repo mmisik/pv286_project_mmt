@@ -1,13 +1,13 @@
 package cz.muni.fi.pv286.mmt.repsentationParser;
 
+import cz.muni.fi.pv286.mmt.exceptions.InvalidIntCountException;
+import cz.muni.fi.pv286.mmt.exceptions.InvalidIntInputException;
 import cz.muni.fi.pv286.mmt.model.FromToOption;
 import cz.muni.fi.pv286.mmt.model.Options;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Optional;
 
 public class IntParser extends RepresentationParser {
@@ -55,7 +55,7 @@ public class IntParser extends RepresentationParser {
     public void parseTo(byte[] bytes) throws IOException {
 
         if (bytes.length > 4) {
-            throw new IOException("Integer is not valid.");
+            throw new InvalidIntInputException();
         }
 
         byte[] bytesToWrite = new byte[4];
@@ -103,14 +103,14 @@ public class IntParser extends RepresentationParser {
             }
 
             if (!isNumber((char) readByte)) {
-                throw new IOException("Invalid number characters encountered.");
+                throw new InvalidIntInputException("Invalid number characters encountered.");
             }
 
             characterCount++;
 
             // 10 characters is the maximum number of digits in an integer
             if (characterCount > 10) {
-                throw new IOException("Integer of this length would overflow.");
+                throw new InvalidIntCountException("Integer of this length would overflow.");
             }
 
             integerBuilder.append((char)readByte);
@@ -121,7 +121,7 @@ public class IntParser extends RepresentationParser {
         try {
             integer = Integer.parseUnsignedInt(integerBuilder.toString());
         } catch (NumberFormatException e) {
-            throw new IOException("Integer is not valid.");
+            throw new InvalidIntInputException();
         }
 
         Endian endian = Endian.BIG;
