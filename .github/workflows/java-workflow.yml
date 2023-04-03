@@ -47,7 +47,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/.cifuzz-corpus
-          key: ${{ runner.os }}-cifuzz-${{ hashFiles(format('{0}/.cifuzz-corpus/**'), github.workspace) }}
+          key: ${{ runner.os }}-cifuzz-${{ hashFiles(format('{0}/.cifuzz-corpus/**', github.workspace)) }}
           restore-keys: ${{ runner.os }}-cifuzz
 
       - name: Run CIFuzz
