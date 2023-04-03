@@ -25,7 +25,7 @@ jobs:
       - name: Run CIFuzz
         env:
           JAZZER_FUZZ: 1
-        run: mvn surefire:test
+        run: mvn surefire:test -Dtest=BitParserFuzzTest && mvn surefire:test -Dtest=ByteParserFuzzTest && mvn surefire:test -Dtest=HexParserFuzzTest && mvn surefire:test -Dtest=IntParserFuzzTest
       
       - name: Run Integration.py
         run: python -m unittest discover -v -s . -p integration.py
