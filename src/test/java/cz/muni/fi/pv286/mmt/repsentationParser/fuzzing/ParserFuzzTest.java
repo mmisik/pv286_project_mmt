@@ -6,6 +6,7 @@ import cz.muni.fi.pv286.mmt.repsentationParser.RepresentationParser;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -28,6 +29,7 @@ public class ParserFuzzTest {
 //            fail(e.getMessage());
 //        }
 
+//        System.out.println("Expected:" + Arrays.toString(output) + " Got: " + Arrays.toString(outputStream.toByteArray()));
         assertArrayEquals(output, outputStream.toByteArray());
     }
 

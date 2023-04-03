@@ -424,3 +424,4 @@ pyrightconfig.json
 .cifuzz-corpus/
 .cifuzz-build/
 crash-*
+slow-unit*

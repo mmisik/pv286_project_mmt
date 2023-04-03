@@ -33,8 +33,8 @@ public class BitParserFuzzTest extends ParserFuzzTest {
     }
 
     private byte[] sanitize(byte[] bytes) {
-        byte[] padded = BitParser.padOutput(Optional.of(FromToOption.Left), bytes);
-        String str = new String(padded, StandardCharsets.UTF_8);
-        return str.replace(" ", "").getBytes();
+        String str = new String(bytes, StandardCharsets.UTF_8);
+        byte[] padded = BitParser.padOutput(Optional.of(FromToOption.Left), str.replace(" ", "").getBytes());
+        return padded;
     }
 }

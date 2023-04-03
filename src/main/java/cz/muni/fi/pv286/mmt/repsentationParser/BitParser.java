@@ -139,7 +139,6 @@ public class BitParser extends RepresentationParser {
 
         byte[] padded = padOutput(options.getInputFromToOption(), output.toByteArray());
         String str = new String(padded, StandardCharsets.UTF_8);
-        System.out.println(str);
 
         return encodeToByteArray(padded);
     }
