@@ -44,6 +44,7 @@ jobs:
         run: mvn clean verify sonar:sonar -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
       - name: Cache CIFuzz Corpus
+        if: github.ref == 'refs/heads/main'
         uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/.cifuzz-corpus
@@ -51,6 +52,7 @@ jobs:
           restore-keys: ${{ runner.os }}-cifuzz
 
       - name: Run CIFuzz
+        if: github.ref == 'refs/heads/main'
         env:
           JAZZER_FUZZ: 1
         run: mvn surefire:test -Dtest=BitParserFuzzTest && mvn surefire:test -Dtest=ByteParserFuzzTest && mvn surefire:test -Dtest=HexParserFuzzTest && mvn surefire:test -Dtest=IntParserFuzzTest
@@ -59,6 +61,7 @@ jobs:
         run: mvn install
 
       - name: Archive production artifacts
+        if: github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v3
         with:
           name: panbyte-jar
