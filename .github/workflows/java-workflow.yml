@@ -30,8 +30,8 @@ jobs:
       - name: Cache CIFuzz Corpus
         uses: actions/cache@v3
         with:
-          path: ${{ GITHUB_WORKSPACE }}/.cifuzz-corpus
-          key: ${{ runner.os }}-cifuzz-${{ hashFiles('${{ GITHUB_WORKSPACE }}/.cifuzz-corpus/**') }}
+          path: ${{ github.workspace }}/.cifuzz-corpus
+          key: ${{ runner.os }}-cifuzz-${{ hashFiles('${{ github.workspace }}/.cifuzz-corpus/**') }}
           restore-keys: ${{ runner.os }}-cifuzz
 
       - name: Run Integration.py
