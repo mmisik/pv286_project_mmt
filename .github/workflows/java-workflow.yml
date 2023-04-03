@@ -3,11 +3,12 @@ name: Java CI
 on: [push]
 
 jobs:
-  test:
+  build_and_test:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -18,21 +19,16 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
       
       - name: Run Maven tests
         run: mvn verify
-
-      - name: Run CIFuzz
-        env:
-          JAZZER_FUZZ: 1
-        run: mvn surefire:test -Dtest=BitParserFuzzTest && mvn surefire:test -Dtest=ByteParserFuzzTest && mvn surefire:test -Dtest=HexParserFuzzTest && mvn surefire:test -Dtest=IntParserFuzzTest
-      
-      - name: Cache CIFuzz Corpus
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/.cifuzz-corpus
-          key: ${{ runner.os }}-cifuzz-${{ hashFiles('${{ github.workspace }}/.cifuzz-corpus/**') }}
-          restore-keys: ${{ runner.os }}-cifuzz
 
       - name: Run Integration.py
         run: python -m unittest discover -v -s . -p integration.py
@@ -41,15 +37,29 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
+          key: ${{ runner.os }}-sonar-${{ hashFiles('~/.sonar/cache/**') }}
           restore-keys: ${{ runner.os }}-sonar
-          
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
           
       - name: Build and analyze with SonarQube
         run: mvn clean verify sonar:sonar -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+      - name: Cache CIFuzz Corpus
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/.cifuzz-corpus
+          key: ${{ runner.os }}-cifuzz-${{ hashFiles(format('{0}/.cifuzz-corpus/**'), github.workspace) }}
+          restore-keys: ${{ runner.os }}-cifuzz
+
+      - name: Run CIFuzz
+        env:
+          JAZZER_FUZZ: 1
+        run: mvn surefire:test -Dtest=BitParserFuzzTest && mvn surefire:test -Dtest=ByteParserFuzzTest && mvn surefire:test -Dtest=HexParserFuzzTest && mvn surefire:test -Dtest=IntParserFuzzTest
+      
+      - name: Build
+        run: mvn install
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: panbyte-jar
+          path: target/panbyte.jar
