@@ -1,11 +1,11 @@
-package cz.muni.fi.pv286.mmt.repsentationParser.fuzzing;
+package cz.muni.fi.pv286.mmt.representation.fuzzing;
 
 import com.code_intelligence.jazzer.api.FuzzedDataProvider;
 import com.code_intelligence.jazzer.junit.FuzzTest;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidBitCharacterException;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidBitInputException;
 import cz.muni.fi.pv286.mmt.model.FromToOption;
-import cz.muni.fi.pv286.mmt.repsentationParser.*;
+import cz.muni.fi.pv286.mmt.representation.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

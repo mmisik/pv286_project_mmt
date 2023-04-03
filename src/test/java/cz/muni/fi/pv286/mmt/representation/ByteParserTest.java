@@ -1,8 +1,6 @@
-package cz.muni.fi.pv286.mmt.repsentationParser;
+package cz.muni.fi.pv286.mmt.representation;
 
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ByteParserTest extends ParserTest {
 

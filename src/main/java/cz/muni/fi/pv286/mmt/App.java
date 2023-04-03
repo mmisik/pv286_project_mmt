@@ -1,20 +1,28 @@
 package cz.muni.fi.pv286.mmt;
 
-import cz.muni.fi.pv286.mmt.arg_parser.ArgParser;
+import static java.lang.System.exit;
+
+import cz.muni.fi.pv286.mmt.arguments.ArgParser;
 import cz.muni.fi.pv286.mmt.exceptions.BadArgumentsException;
 import cz.muni.fi.pv286.mmt.exceptions.HelpInvokedException;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidInputException;
-import cz.muni.fi.pv286.mmt.model.IOFormat;
+import cz.muni.fi.pv286.mmt.model.IoFormat;
 import cz.muni.fi.pv286.mmt.model.Options;
-import cz.muni.fi.pv286.mmt.repsentationParser.*;
-
+import cz.muni.fi.pv286.mmt.representation.ArrayParser;
+import cz.muni.fi.pv286.mmt.representation.BitParser;
+import cz.muni.fi.pv286.mmt.representation.ByteParser;
+import cz.muni.fi.pv286.mmt.representation.HexParser;
+import cz.muni.fi.pv286.mmt.representation.IntParser;
+import cz.muni.fi.pv286.mmt.representation.RepresentationParser;
 import java.io.FileNotFoundException;
 
-import static java.lang.System.exit;
 
-public class App 
-{
-    private static RepresentationParser getRepresentationParser(Options options, IOFormat ioFormat) {
+/**
+ * Main class of the application.
+ */
+public class App {
+    private static
+        RepresentationParser getRepresentationParser(Options options, IoFormat ioFormat) {
         switch (ioFormat) {
             case Bytes -> {
                 return new ByteParser(options);
@@ -31,13 +39,18 @@ public class App
             case Array -> {
                 return new ArrayParser(options);
             }
+            default -> {
+                throw new IllegalArgumentException("Invalid IOFormat");
+            }
         }
-
-        throw new IllegalArgumentException("Invalid IOFormat");
     }
 
-    public static void main(String[] args)
-    {
+    /**
+     * Main method of the application.
+     *
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
         ArgParser parser = new ArgParser(args);
 
         if (args.length == 0) {
@@ -47,8 +60,10 @@ public class App
 
         try {
             Options options = parser.parse();
-            RepresentationParser inParser = getRepresentationParser(options, options.getInputFormat());
-            RepresentationParser outParser = getRepresentationParser(options, options.getOutputFormat());
+            RepresentationParser inParser =
+                    getRepresentationParser(options, options.getInputFormat());
+            RepresentationParser outParser =
+                    getRepresentationParser(options, options.getOutputFormat());
 
             var input = inParser.parseFrom();
             outParser.parseTo(input);

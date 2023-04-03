@@ -1,10 +1,10 @@
-package cz.muni.fi.pv286.mmt.arg_parser;
+package cz.muni.fi.pv286.mmt.arguments;
 
 import cz.muni.fi.pv286.mmt.exceptions.BadArgumentsException;
 import cz.muni.fi.pv286.mmt.exceptions.HelpInvokedException;
 import cz.muni.fi.pv286.mmt.model.BracketType;
 import cz.muni.fi.pv286.mmt.model.FromToOption;
-import cz.muni.fi.pv286.mmt.model.IOFormat;
+import cz.muni.fi.pv286.mmt.model.IoFormat;
 import cz.muni.fi.pv286.mmt.model.Options;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,8 +24,8 @@ class ArgParserTest {
         ArgParser argParser = new ArgParser(args);
         try {
             Options options = argParser.parse();
-            assertEquals(IOFormat.Bytes, options.getInputFormat());
-            assertEquals(IOFormat.Bytes, options.getOutputFormat());
+            assertEquals(IoFormat.Bytes, options.getInputFormat());
+            assertEquals(IoFormat.Bytes, options.getOutputFormat());
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -37,8 +37,8 @@ class ArgParserTest {
         ArgParser argParser = new ArgParser(args);
         try {
             Options options = argParser.parse();
-            assertEquals(IOFormat.Bytes, options.getInputFormat());
-            assertEquals(IOFormat.Bytes, options.getOutputFormat());
+            assertEquals(IoFormat.Bytes, options.getInputFormat());
+            assertEquals(IoFormat.Bytes, options.getOutputFormat());
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -49,8 +49,8 @@ class ArgParserTest {
         ArgParser argParser = new ArgParser(args);
         try {
             Options options = argParser.parse();
-            assertEquals(IOFormat.Hex, options.getInputFormat());
-            assertEquals(IOFormat.Int, options.getOutputFormat());
+            assertEquals(IoFormat.Hex, options.getInputFormat());
+            assertEquals(IoFormat.Int, options.getOutputFormat());
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -62,8 +62,8 @@ class ArgParserTest {
         ArgParser argParser = new ArgParser(args);
         try {
             Options options = argParser.parse();
-            assertEquals(IOFormat.Bits, options.getInputFormat());
-            assertEquals(IOFormat.Array, options.getOutputFormat());
+            assertEquals(IoFormat.Bits, options.getInputFormat());
+            assertEquals(IoFormat.Array, options.getOutputFormat());
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -75,8 +75,8 @@ class ArgParserTest {
         ArgParser argParser = new ArgParser(args);
         try {
             Options options = argParser.parse();
-            assertEquals(IOFormat.Array, options.getInputFormat());
-            assertEquals(IOFormat.Array, options.getOutputFormat());
+            assertEquals(IoFormat.Array, options.getInputFormat());
+            assertEquals(IoFormat.Array, options.getOutputFormat());
             assertEquals(FromToOption.Decimal, options.getOutputFromToOption().orElseThrow());
             assertEquals(BracketType.CurlyBracket, options.getBracketType().orElseThrow());
         } catch (Exception e) {
@@ -90,8 +90,8 @@ class ArgParserTest {
         ArgParser argParser = new ArgParser(args);
         try {
             Options options = argParser.parse();
-            assertEquals(IOFormat.Array, options.getInputFormat());
-            assertEquals(IOFormat.Array, options.getOutputFormat());
+            assertEquals(IoFormat.Array, options.getInputFormat());
+            assertEquals(IoFormat.Array, options.getOutputFormat());
             assertEquals(FromToOption.Hex, options.getOutputFromToOption().orElseThrow());
             assertEquals(BracketType.CurlyBracket, options.getBracketType().orElseThrow());
         } catch (Exception e) {
@@ -105,8 +105,8 @@ class ArgParserTest {
         ArgParser argParser = new ArgParser(args);
         try {
             Options options = argParser.parse();
-            assertEquals(IOFormat.Int, options.getInputFormat());
-            assertEquals(IOFormat.Int, options.getOutputFormat());
+            assertEquals(IoFormat.Int, options.getInputFormat());
+            assertEquals(IoFormat.Int, options.getOutputFormat());
             assertEquals(FromToOption.Big, options.getInputFromToOption().orElseThrow());
             assertEquals(FromToOption.Big, options.getOutputFromToOption().orElseThrow());
         } catch (Exception e) {
@@ -120,8 +120,8 @@ class ArgParserTest {
         ArgParser argParser = new ArgParser(args);
         try {
             Options options = argParser.parse();
-            assertEquals(IOFormat.Int, options.getInputFormat());
-            assertEquals(IOFormat.Int, options.getOutputFormat());
+            assertEquals(IoFormat.Int, options.getInputFormat());
+            assertEquals(IoFormat.Int, options.getOutputFormat());
             assertEquals(FromToOption.Little, options.getInputFromToOption().orElseThrow());
             assertEquals(FromToOption.Little, options.getOutputFromToOption().orElseThrow());
         } catch (Exception e) {
@@ -135,8 +135,8 @@ class ArgParserTest {
         ArgParser argParser = new ArgParser(args);
         try {
             Options options = argParser.parse();
-            assertEquals(IOFormat.Bits, options.getInputFormat());
-            assertEquals(IOFormat.Bits, options.getOutputFormat());
+            assertEquals(IoFormat.Bits, options.getInputFormat());
+            assertEquals(IoFormat.Bits, options.getOutputFormat());
             assertTrue(options.getOutputFromToOption().isEmpty());
             assertEquals(FromToOption.Left, options.getInputFromToOption().orElseThrow());
         } catch (Exception e) {

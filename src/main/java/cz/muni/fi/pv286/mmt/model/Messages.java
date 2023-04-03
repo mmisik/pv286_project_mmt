@@ -1,5 +1,8 @@
 package cz.muni.fi.pv286.mmt.model;
 
+/**
+ * This class contains output messages used in application.
+ */
 public final class Messages {
     public static final String MESSAGE_INVALID_ARGUMENTS = "Invalid arguments";
     public static final String FILE_IS_DIRECTORY = "File is a directory";
@@ -10,4 +13,7 @@ public final class Messages {
     public static final String UNKNOWN_OPTION = "Unknown option provided";
     public static final String UNKNOWN_FORMAT = "Unknown format provided";
     public static final String UNKNOWN_ARGUMENT = "Unknown argument provided";
+
+    private Messages() {
+    }
 }
