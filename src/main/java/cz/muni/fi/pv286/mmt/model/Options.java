@@ -9,15 +9,15 @@ import java.util.Optional;
  */
 public class Options {
     private IoFormat inputFormat;
-    private Optional<FromToOption> inputFromToOption = Optional.empty();
+    private Optional<IoOption> inputFromToOption = Optional.empty();
     private IoFormat outputFormat;
-    private Optional<FromToOption> outputFromToOption = Optional.empty();
+    private Optional<IoOption> outputFromToOption = Optional.empty();
     private InputStream inputFile = System.in;
     private OutputStream outputFile = System.out;
-    private char delimiter = '\n';
+    private String delimiter = "\n";
     private Optional<BracketType> bracketType = Optional.empty();
     private boolean wasFromOptionSet = false;
-    private final boolean wasToOptionSet = false;
+    private boolean wasToOptionSet = false;
     private boolean wasBracketSet = false;
 
     /**
@@ -31,11 +31,11 @@ public class Options {
      * Sets the input format.
      */
     public void setInputFormat(IoFormat inputFormat) {
-        if (inputFormat == IoFormat.Int && !wasFromOptionSet) {
-            inputFromToOption = Optional.of(FromToOption.Big);
+        if (inputFormat == IoFormat.INT && !wasFromOptionSet) {
+            inputFromToOption = Optional.of(IoOption.BIG);
         }
-        if (inputFormat == IoFormat.Bits && !wasFromOptionSet) {
-            inputFromToOption = Optional.of(FromToOption.Left);
+        if (inputFormat == IoFormat.BITS && !wasFromOptionSet) {
+            inputFromToOption = Optional.of(IoOption.LEFT);
         }
         this.inputFormat = inputFormat;
     }
@@ -44,7 +44,7 @@ public class Options {
     /**
      * Get the input FromToOption.
      */
-    public Optional<FromToOption> getInputFromToOption() {
+    public Optional<IoOption> getInputFromToOption() {
         return inputFromToOption;
     }
 
@@ -52,7 +52,7 @@ public class Options {
      * Sets the input FromToOption.
      */
     public void setInputFromToOption(FromToOption inputFromToOption) {
-        this.inputFromToOption = Optional.of(inputFromToOption);
+        this.inputFromToOption = Optional.of(IoOption.from(inputFromToOption));
         wasFromOptionSet = true;
     }
 
@@ -76,14 +76,14 @@ public class Options {
      * Sets the output format.
      */
     public void setOutputFormat(IoFormat outputFormat) {
-        if (outputFormat == IoFormat.Int && !wasToOptionSet) {
-            outputFromToOption = Optional.of(FromToOption.Big);
+        if (outputFormat == IoFormat.INT && !wasToOptionSet) {
+            outputFromToOption = Optional.of(IoOption.BIG);
         }
-        if (outputFormat == IoFormat.Array && !wasToOptionSet) {
-            outputFromToOption = Optional.of(FromToOption.Hex);
+        if (outputFormat == IoFormat.ARRAY && !wasToOptionSet) {
+            outputFromToOption = Optional.of(IoOption.HEX);
         }
-        if (outputFormat == IoFormat.Array && !wasBracketSet) {
-            bracketType = Optional.of(BracketType.CurlyBracket);
+        if (outputFormat == IoFormat.ARRAY && !wasBracketSet) {
+            bracketType = Optional.of(BracketType.CURLY_BRACKET);
         }
 
         this.outputFormat = outputFormat;
@@ -92,7 +92,7 @@ public class Options {
     /**
      * Gets the output FromToOption.
      */
-    public Optional<FromToOption> getOutputFromToOption() {
+    public Optional<IoOption> getOutputFromToOption() {
         return outputFromToOption;
     }
 
@@ -100,14 +100,15 @@ public class Options {
      * Sets the output FromToOption.
      */
     public void setOutputFromToOption(FromToOption outputFromToOption) {
-        if (outputFromToOption == FromToOption.CurlyBracket) {
-            setBracketOption(BracketType.CurlyBracket);
-        } else if (outputFromToOption == FromToOption.SquareBracket) {
-            setBracketOption(BracketType.SquareBracket);
-        } else if (outputFromToOption == FromToOption.RegularBracket) {
-            setBracketOption(BracketType.RegularBracket);
+        if (outputFromToOption == FromToOption.CURLY_BRACKET) {
+            setBracketOption(BracketType.CURLY_BRACKET);
+        } else if (outputFromToOption == FromToOption.SQUARE_BRACKET) {
+            setBracketOption(BracketType.SQUARE_BRACKET);
+        } else if (outputFromToOption == FromToOption.REGULAR_BRACKET) {
+            setBracketOption(BracketType.REGULAR_BRACKET);
         } else {
-            this.outputFromToOption = Optional.of(outputFromToOption);
+            this.outputFromToOption = Optional.of(IoOption.from(outputFromToOption));
+            wasToOptionSet = true;
         }
 
     }
@@ -128,11 +129,11 @@ public class Options {
         this.outputFile = outputFile;
     }
 
-    public char getDelimiter() {
+    public String getDelimiter() {
         return delimiter;
     }
 
-    public void setDelimiter(char delimiter) {
+    public void setDelimiter(String delimiter) {
         this.delimiter = delimiter;
     }
 

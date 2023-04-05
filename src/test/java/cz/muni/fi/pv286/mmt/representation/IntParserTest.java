@@ -67,11 +67,11 @@ class IntParserTest extends ParserTest {
     @Test
     public void endianityTest() {
         Options options = new Options();
-        options.setInputFromToOption(FromToOption.Little);
+        options.setInputFromToOption(FromToOption.LITTLE);
         assertConversion(options, IntParser.class, HexParser.class, "1234567890".getBytes(), "d2029649".getBytes());
 
         options = new Options();
-        options.setOutputFromToOption(FromToOption.Little);
+        options.setOutputFromToOption(FromToOption.LITTLE);
         assertConversion(options, HexParser.class, IntParser.class, "d2029649".getBytes(), "1234567890".getBytes());
     }
 

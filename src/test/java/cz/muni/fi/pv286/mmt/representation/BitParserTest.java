@@ -36,7 +36,7 @@ public class BitParserTest extends ParserTest{
     @Test
     public void fromBitsToHexTest() {
         Options options = new Options();
-        options.setInputFromToOption(FromToOption.Right);
+        options.setInputFromToOption(FromToOption.RIGHT);
 
         assertConversion(options, BitParser.class, HexParser.class, "100111101001011".getBytes(), "9e96".getBytes());
         assertConversion(options, BitParser.class, HexParser.class, "1010111010000011".getBytes(), "ae83".getBytes());
@@ -68,7 +68,7 @@ public class BitParserTest extends ParserTest{
     @Test
     public void paddingRightTest() {
         Options options = new Options();
-        options.setInputFromToOption(FromToOption.Right);
+        options.setInputFromToOption(FromToOption.RIGHT);
 
         assertConversion(options, BitParser.class, BitParser.class, "0".getBytes(), "00000000".getBytes());
         assertConversion(options, BitParser.class, BitParser.class, "1".getBytes(), "10000000".getBytes());

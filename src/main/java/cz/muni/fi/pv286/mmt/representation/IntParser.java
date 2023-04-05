@@ -3,6 +3,7 @@ package cz.muni.fi.pv286.mmt.representation;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidIntCountException;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidIntInputException;
 import cz.muni.fi.pv286.mmt.model.FromToOption;
+import cz.muni.fi.pv286.mmt.model.IoOption;
 import cz.muni.fi.pv286.mmt.model.Options;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -68,9 +69,9 @@ public class IntParser extends RepresentationParser {
             i++;
         }
 
-        Optional<FromToOption> endianness = options.getOutputFromToOption();
+        Optional<IoOption> endianness = options.getOutputFromToOption();
         if (endianness.isPresent()) {
-            if (endianness.get() == FromToOption.Little) {
+            if (endianness.get() == IoOption.LITTLE) {
                 bytesToWrite = reverseByteArray(bytesToWrite);
             } // else by default is Big endian
         }
@@ -125,9 +126,9 @@ public class IntParser extends RepresentationParser {
         }
 
         Endian endian = Endian.BIG;
-        Optional<FromToOption> endianness = options.getInputFromToOption();
+        Optional<IoOption> endianness = options.getInputFromToOption();
         if (endianness.isPresent()) {
-            if (endianness.get() == FromToOption.Little) {
+            if (endianness.get() == IoOption.LITTLE) {
                 endian = Endian.LITTLE;
             } // else by default is Big endian
         }

@@ -5,6 +5,7 @@ import com.code_intelligence.jazzer.junit.FuzzTest;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidBitCharacterException;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidBitInputException;
 import cz.muni.fi.pv286.mmt.model.FromToOption;
+import cz.muni.fi.pv286.mmt.model.IoOption;
 import cz.muni.fi.pv286.mmt.representation.*;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class BitParserFuzzTest extends ParserFuzzTest {
 
     private byte[] sanitize(byte[] bytes) {
         String str = new String(bytes, StandardCharsets.UTF_8);
-        byte[] padded = BitParser.padOutput(Optional.of(FromToOption.Left), str.replace(" ", "").getBytes());
+        byte[] padded = BitParser.padOutput(Optional.of(IoOption.LEFT), str.replace(" ", "").getBytes());
         return padded;
     }
 }

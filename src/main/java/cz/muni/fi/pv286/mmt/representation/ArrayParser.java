@@ -1,8 +1,8 @@
 package cz.muni.fi.pv286.mmt.representation;
 
 import cz.muni.fi.pv286.mmt.model.BracketType;
-import cz.muni.fi.pv286.mmt.model.FromToOption;
 import cz.muni.fi.pv286.mmt.model.IoFormat;
+import cz.muni.fi.pv286.mmt.model.IoOption;
 import cz.muni.fi.pv286.mmt.model.Options;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,11 +19,11 @@ public class ArrayParser extends RepresentationParser {
     }
 
     private String getOpeningBracket(BracketType bracketType) {
-        if (bracketType == BracketType.SquareBracket) {
+        if (bracketType == BracketType.SQUARE_BRACKET) {
             return "[";
         }
 
-        if (bracketType == BracketType.RegularBracket) {
+        if (bracketType == BracketType.REGULAR_BRACKET) {
             return "(";
         }
 
@@ -32,11 +32,11 @@ public class ArrayParser extends RepresentationParser {
 
 
     private String getClosingBracket(BracketType bracketType) {
-        if (bracketType == BracketType.SquareBracket) {
+        if (bracketType == BracketType.SQUARE_BRACKET) {
             return "]";
         }
 
-        if (bracketType == BracketType.RegularBracket) {
+        if (bracketType == BracketType.REGULAR_BRACKET) {
             return ")";
         }
 
@@ -50,12 +50,12 @@ public class ArrayParser extends RepresentationParser {
 
     private String formatOutput(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
-        FromToOption outputOption = options.getOutputFromToOption().orElse(FromToOption.Hex);
-        BracketType bracketType = options.getBracketType().orElse(BracketType.CurlyBracket);
+        IoOption outputOption = options.getOutputFromToOption().orElse(IoOption.HEX);
+        BracketType bracketType = options.getBracketType().orElse(BracketType.CURLY_BRACKET);
 
         boolean possibleComma = false;
 
-        if (options.getInputFormat() != IoFormat.Array) {
+        if (options.getInputFormat() != IoFormat.ARRAY) {
             sb.append(getOpeningBracket(bracketType));
         }
 
@@ -89,13 +89,13 @@ public class ArrayParser extends RepresentationParser {
                 continue;
             }
 
-            if (outputOption == FromToOption.Hex) {
+            if (outputOption == IoOption.HEX) {
                 sb.append(String.format("0x%02x", b));
-            } else if (outputOption == FromToOption.Decimal) {
+            } else if (outputOption == IoOption.DECIMAL) {
                 sb.append(b & 0xff);
-            } else if (outputOption == FromToOption.Character) {
+            } else if (outputOption == IoOption.CHARACTER) {
                 sb.append(String.format("'%s'", (char) b));
-            } else if (outputOption == FromToOption.Binary) {
+            } else if (outputOption == IoOption.BINARY) {
                 sb.append("0b").append(Integer.toBinaryString(b & 0xff)
                         .replaceFirst("^0+(?!$)", ""));
             }
@@ -103,7 +103,7 @@ public class ArrayParser extends RepresentationParser {
             possibleComma = true;
         }
 
-        if (options.getInputFormat() != IoFormat.Array) {
+        if (options.getInputFormat() != IoFormat.ARRAY) {
             sb.append(getClosingBracket(bracketType));
         }
 
@@ -128,7 +128,7 @@ public class ArrayParser extends RepresentationParser {
             String value = valueMatcher.group(1);
 
             if ("{[()]}".contains(value)) {
-                if (options.getOutputFormat() == IoFormat.Array) {
+                if (options.getOutputFormat() == IoFormat.ARRAY) {
                     byteArrayOutputStream.write(value.getBytes());
                 }
             } else if (value.startsWith("0x")) {

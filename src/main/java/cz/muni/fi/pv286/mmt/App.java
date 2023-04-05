@@ -24,19 +24,19 @@ public class App {
     private static
         RepresentationParser getRepresentationParser(Options options, IoFormat ioFormat) {
         switch (ioFormat) {
-            case Bytes -> {
+            case BYTES -> {
                 return new ByteParser(options);
             }
-            case Hex -> {
+            case HEX -> {
                 return new HexParser(options);
             }
-            case Int -> {
+            case INT -> {
                 return new IntParser(options);
             }
-            case Bits -> {
+            case BITS -> {
                 return new BitParser(options);
             }
-            case Array -> {
+            case ARRAY -> {
                 return new ArrayParser(options);
             }
             default -> {
