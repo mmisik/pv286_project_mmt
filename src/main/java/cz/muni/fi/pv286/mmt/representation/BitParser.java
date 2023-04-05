@@ -3,13 +3,13 @@ package cz.muni.fi.pv286.mmt.representation;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidBitCharacterException;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidBitInputException;
 import cz.muni.fi.pv286.mmt.model.FromToOption;
+import cz.muni.fi.pv286.mmt.model.IoOption;
 import cz.muni.fi.pv286.mmt.model.Options;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -25,7 +25,7 @@ public class BitParser extends RepresentationParser {
     /**
      * Static method to allow padding of bytes from left or right.
      */
-    public static byte[] padOutput(Optional<FromToOption> inputFromToOption, byte[] bits) {
+    public static byte[] padOutput(Optional<IoOption> inputFromToOption, byte[] bits) {
         int remaining = bits.length % 8;
         byte padByte = 48;
 
@@ -35,16 +35,16 @@ public class BitParser extends RepresentationParser {
 
         byte[] paddedBits = new byte[bits.length + (8 - remaining)];
 
-        FromToOption direction;
+        IoOption direction;
 
         try {
-            direction = inputFromToOption.orElse(FromToOption.Left);
+            direction = inputFromToOption.orElse(IoOption.LEFT);
         } catch (NullPointerException e) {
-            direction = FromToOption.Left;
+            direction = IoOption.LEFT;
         }
 
 
-        if (direction == FromToOption.Left) {
+        if (direction == IoOption.LEFT) {
             Arrays.fill(paddedBits, 0, 8 - remaining, padByte);
             System.arraycopy(bits, 0, paddedBits, 8 - remaining, bits.length);
         } else {

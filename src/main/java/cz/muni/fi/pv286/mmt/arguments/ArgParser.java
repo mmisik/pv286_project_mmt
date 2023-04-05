@@ -17,6 +17,7 @@ import cz.muni.fi.pv286.mmt.model.ArgMatch;
 import cz.muni.fi.pv286.mmt.model.FromOrTo;
 import cz.muni.fi.pv286.mmt.model.FromToOption;
 import cz.muni.fi.pv286.mmt.model.IoFormat;
+import cz.muni.fi.pv286.mmt.model.IoOption;
 import cz.muni.fi.pv286.mmt.model.Options;
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,56 +45,56 @@ public class ArgParser {
 
     private static IoFormat matchFormat(String format) throws BadArgumentsException {
         if (Patterns.bits.matcher(format).matches()) {
-            return IoFormat.Bits;
+            return IoFormat.BITS;
         }
         if (Patterns.hex.matcher(format).matches()) {
-            return IoFormat.Hex;
+            return IoFormat.HEX;
         }
         if (Patterns.integer.matcher(format).matches()) {
-            return IoFormat.Int;
+            return IoFormat.INT;
         }
         if (Patterns.bytes.matcher(format).matches()) {
-            return IoFormat.Bytes;
+            return IoFormat.BYTES;
         }
         if (Patterns.array.matcher(format).matches()) {
-            return IoFormat.Array;
+            return IoFormat.ARRAY;
         }
         throw new BadArgumentsException(UNKNOWN_FORMAT);
     }
 
     private static FromToOption matchOption(String option) throws BadArgumentsException {
         if (Patterns.big.matcher(option).matches()) {
-            return FromToOption.Big;
+            return FromToOption.BIG;
         }
         if (Patterns.little.matcher(option).matches()) {
-            return FromToOption.Little;
+            return FromToOption.LITTLE;
         }
         if (Patterns.left.matcher(option).matches()) {
-            return FromToOption.Left;
+            return FromToOption.LEFT;
         }
         if (Patterns.right.matcher(option).matches()) {
-            return FromToOption.Right;
+            return FromToOption.RIGHT;
         }
         if (Patterns.curlyBracket.matcher(option).matches()) {
-            return FromToOption.CurlyBracket;
+            return FromToOption.CURLY_BRACKET;
         }
         if (Patterns.squareBracket.matcher(option).matches()) {
-            return FromToOption.SquareBracket;
+            return FromToOption.SQUARE_BRACKET;
         }
         if (Patterns.regularBracket.matcher(option).matches()) {
-            return FromToOption.RegularBracket;
+            return FromToOption.REGULAR_BRACKET;
         }
         if (Patterns.hexOption.matcher(option).matches()) {
-            return FromToOption.Hex;
+            return FromToOption.HEX;
         }
         if (Patterns.decimalOption.matcher(option).matches()) {
-            return FromToOption.Decimal;
+            return FromToOption.DECIMAL;
         }
         if (Patterns.charOption.matcher(option).matches()) {
-            return FromToOption.Character;
+            return FromToOption.CHARACTER;
         }
         if (Patterns.binaryOption.matcher(option).matches()) {
-            return FromToOption.Binary;
+            return FromToOption.BINARY;
         }
         throw new BadArgumentsException(UNKNOWN_OPTION);
     }
@@ -125,8 +126,8 @@ public class ArgParser {
     private static void checkHasInputFromToOptionAndIsRightFormat(Options options)
             throws BadArgumentsException {
         if (options.getInputFromToOption().isPresent()
-                && (options.getInputFormat() != IoFormat.Int
-                && options.getInputFormat() != IoFormat.Bits)) {
+                && (options.getInputFormat() != IoFormat.INT
+                && options.getInputFormat() != IoFormat.BITS)) {
             throw new BadArgumentsException(MESSAGE_INVALID_ARGUMENTS);
         }
     }
@@ -134,29 +135,29 @@ public class ArgParser {
     private static void checkHasOutputFromToOptionAndIsRightFormat(Options options)
             throws BadArgumentsException {
         if (options.getOutputFromToOption().isPresent()
-                && (options.getOutputFormat() != IoFormat.Int
-                && options.getOutputFormat() != IoFormat.Array)) {
+                && (options.getOutputFormat() != IoFormat.INT
+                && options.getOutputFormat() != IoFormat.ARRAY)) {
             throw new BadArgumentsException(MESSAGE_INVALID_ARGUMENTS);
         }
     }
 
     private static void checkIsArrayIfHasBracketFormat(Options options)
             throws BadArgumentsException {
-        if (options.getBracketType().isPresent() && options.getOutputFormat() != IoFormat.Array) {
+        if (options.getBracketType().isPresent() && options.getOutputFormat() != IoFormat.ARRAY) {
             throw new BadArgumentsException(MESSAGE_INVALID_ARGUMENTS);
         }
     }
 
     private static void checkExistingIntInputFromToOptionIsBigOrLittle(Options options)
             throws BadArgumentsException {
-        if (options.getInputFormat() != IoFormat.Int) {
+        if (options.getInputFormat() != IoFormat.INT) {
             return;
         }
-        Optional<FromToOption> fromToOption = options.getInputFromToOption();
+        Optional<IoOption> fromToOption = options.getInputFromToOption();
 
         if (fromToOption.isPresent()) {
-            FromToOption option = fromToOption.get();
-            if (option != FromToOption.Big && option != FromToOption.Little) {
+            IoOption option = fromToOption.get();
+            if (option != IoOption.BIG && option != IoOption.LITTLE) {
                 throw new BadArgumentsException(MESSAGE_INVALID_ARGUMENTS);
             }
         }
@@ -164,13 +165,13 @@ public class ArgParser {
 
     private static void checkExistingIntOutputFromToOptionIsBigOrLittle(Options options)
             throws BadArgumentsException {
-        if (options.getOutputFormat() != IoFormat.Int) {
+        if (options.getOutputFormat() != IoFormat.INT) {
             return;
         }
-        Optional<FromToOption> fromToOption = options.getOutputFromToOption();
+        Optional<IoOption> fromToOption = options.getOutputFromToOption();
         if (fromToOption.isPresent()) {
-            FromToOption option = fromToOption.get();
-            if (option != FromToOption.Big && option != FromToOption.Little) {
+            IoOption option = fromToOption.get();
+            if (option != IoOption.BIG && option != IoOption.LITTLE) {
                 throw new BadArgumentsException(MESSAGE_INVALID_ARGUMENTS);
             }
         }
@@ -178,15 +179,15 @@ public class ArgParser {
 
     private static void checkExistingBitsInputFromToOptionIsLeftOfRight(Options options)
             throws BadArgumentsException {
-        if (options.getInputFormat() != IoFormat.Bits) {
+        if (options.getInputFormat() != IoFormat.BITS) {
             return;
         }
 
-        Optional<FromToOption> fromToOption = options.getInputFromToOption();
+        Optional<IoOption> fromToOption = options.getInputFromToOption();
 
         if (fromToOption.isPresent()) {
-            FromToOption option = fromToOption.get();
-            if (option != FromToOption.Left && option != FromToOption.Right) {
+            IoOption option = fromToOption.get();
+            if (option != IoOption.LEFT && option != IoOption.RIGHT) {
                 throw new BadArgumentsException(MESSAGE_INVALID_ARGUMENTS);
             }
         }
@@ -194,20 +195,19 @@ public class ArgParser {
 
     private static void checkExistingArrayOutputFromToOptionsHexToBinary(Options options)
             throws BadArgumentsException {
-        if (options.getOutputFormat() != IoFormat.Array) {
+        if (options.getOutputFormat() != IoFormat.ARRAY) {
             return;
         }
-        Optional<FromToOption> fromToOption = options.getOutputFromToOption();
+        Optional<IoOption> fromToOption = options.getOutputFromToOption();
         if (fromToOption.isPresent()) {
-            FromToOption option = fromToOption.get();
-            if (option != FromToOption.Hex
-                    && option != FromToOption.Binary
-                    && option != FromToOption.Decimal
-                    && option != FromToOption.Character) {
+            IoOption option = fromToOption.get();
+            if (option != IoOption.HEX
+                    && option != IoOption.BINARY
+                    && option != IoOption.DECIMAL
+                    && option != IoOption.CHARACTER) {
                 throw new BadArgumentsException(MESSAGE_INVALID_ARGUMENTS);
             }
         }
-
     }
 
     private static void validateOptions(Options options)
@@ -274,60 +274,60 @@ public class ArgParser {
             String arg = args[i];
             ArgMatch argMatch = getArgMatch(arg);
             switch (argMatch) {
-                case ShortFromFormat -> {
+                case SHORT_FROM_FORMAT -> {
                     IoFormat format = matchFormat(getNextOption(args, i));
-                    setFormat(options, format, FromOrTo.From);
+                    setFormat(options, format, FromOrTo.FROM);
                     skipNext = true;
                 }
-                case LongFromFormat -> {
+                case LONG_FROM_FORMAT -> {
                     IoFormat format = matchFormat(extractOption(arg));
-                    setFormat(options, format, FromOrTo.From);
+                    setFormat(options, format, FromOrTo.FROM);
                 }
-                case FromOption -> {
+                case FROM_OPTION -> {
                     FromToOption fromToOption = matchOption(extractOption(arg));
-                    setOption(options, fromToOption, FromOrTo.From);
+                    setOption(options, fromToOption, FromOrTo.FROM);
                 }
-                case ShortToFormat -> {
+                case SHORT_TO_FORMAT -> {
                     IoFormat format = matchFormat(getNextOption(args, i));
-                    setFormat(options, format, FromOrTo.To);
+                    setFormat(options, format, FromOrTo.TO);
                     skipNext = true;
                 }
-                case LongToFormat -> {
+                case LONG_TO_FORMAT -> {
                     IoFormat format = matchFormat(extractOption(arg));
-                    setFormat(options, format, FromOrTo.To);
+                    setFormat(options, format, FromOrTo.TO);
                 }
-                case ToOption -> {
+                case TO_OPTION -> {
                     FromToOption fromToOption = matchOption(extractOption(arg));
-                    setOption(options, fromToOption, FromOrTo.To);
+                    setOption(options, fromToOption, FromOrTo.TO);
                 }
-                case ShortFromFile -> {
+                case SHORT_FROM_FILE -> {
                     String path = getNextOption(args, i);
-                    setFile(options, path, FromOrTo.From);
+                    setFile(options, path, FromOrTo.FROM);
                     skipNext = true;
 
                 }
-                case LongFromFile -> {
+                case LONG_FROM_FILE -> {
                     String path = extractOption(arg);
-                    setFile(options, path, FromOrTo.From);
+                    setFile(options, path, FromOrTo.FROM);
                 }
-                case ShortToFile -> {
+                case SHORT_TO_FILE -> {
                     String path = getNextOption(args, i);
-                    setFile(options, path, FromOrTo.To);
+                    setFile(options, path, FromOrTo.TO);
                     skipNext = true;
 
                 }
-                case LongToFile -> {
+                case LONG_TO_FILE -> {
                     String path = extractOption(arg);
-                    setFile(options, path, FromOrTo.To);
+                    setFile(options, path, FromOrTo.TO);
 
                 }
-                case ShortDelimiter -> {
+                case SHORT_DELIMITER -> {
                     String delimiter = getNextOption(args, i);
                     setDelimiter(options, delimiter);
                     skipNext = true;
 
                 }
-                case LongDelimiter -> {
+                case LONG_DELIMITER -> {
                     String delimiter = extractOption(arg);
                     setDelimiter(options, delimiter);
                 }
@@ -341,71 +341,76 @@ public class ArgParser {
 
     private ArgMatch getArgMatch(String str) throws BadArgumentsException {
         if (Patterns.shortFromFormat.matcher(str).matches()) {
-            return ArgMatch.ShortFromFormat;
+            return ArgMatch.SHORT_FROM_FORMAT;
         }
         if (Patterns.longFromFormat.matcher(str).matches()) {
-            return ArgMatch.LongFromFormat;
+            return ArgMatch.LONG_FROM_FORMAT;
         }
         if (Patterns.fromOption.matcher(str).matches()) {
-            return ArgMatch.FromOption;
+            return ArgMatch.FROM_OPTION;
         }
         if (Patterns.shortToFormat.matcher(str).matches()) {
-            return ArgMatch.ShortToFormat;
+            return ArgMatch.SHORT_TO_FORMAT;
         }
         if (Patterns.longToFormat.matcher(str).matches()) {
-            return ArgMatch.LongToFormat;
+            return ArgMatch.LONG_TO_FORMAT;
         }
         if (Patterns.toOption.matcher(str).matches()) {
-            return ArgMatch.ToOption;
+            return ArgMatch.TO_OPTION;
         }
         if (Patterns.shortInputFile.matcher(str).matches()) {
-            return ArgMatch.ShortFromFile;
+            return ArgMatch.SHORT_FROM_FILE;
         }
         if (Patterns.longInputFile.matcher(str).matches()) {
-            return ArgMatch.LongFromFile;
+            return ArgMatch.LONG_FROM_FILE;
         }
         if (Patterns.shortOutputFile.matcher(str).matches()) {
-            return ArgMatch.ShortToFile;
+            return ArgMatch.SHORT_TO_FILE;
         }
         if (Patterns.longOutputFile.matcher(str).matches()) {
-            return ArgMatch.LongToFile;
+            return ArgMatch.LONG_TO_FILE;
         }
         if (Patterns.shortDelimiter.matcher(str).matches()) {
-            return ArgMatch.ShortDelimiter;
+            return ArgMatch.SHORT_DELIMITER;
         }
         if (Patterns.longDelimiter.matcher(str).matches()) {
-            return ArgMatch.LongDelimiter;
+            return ArgMatch.LONG_DELIMITER;
         }
         if (Patterns.shortHelp.matcher(str).matches()) {
-            return ArgMatch.Help;
+            return ArgMatch.HELP;
         }
         if (Patterns.longHelp.matcher(str).matches()) {
-            return ArgMatch.Help;
+            return ArgMatch.HELP;
         }
         throw new BadArgumentsException(MESSAGE_INVALID_ARGUMENTS);
     }
 
     private void setOption(Options options, FromToOption fromToOption, FromOrTo fromOrTo)
             throws BadArgumentsException {
-        if (FromOrTo.From == fromOrTo) {
-            options.setInputFromToOption(fromToOption);
-        } else if (FromOrTo.To == fromOrTo) {
-            options.setOutputFromToOption(fromToOption);
-        } else {
+        try {
+            if (FromOrTo.FROM == fromOrTo) {
+                options.setInputFromToOption(fromToOption);
+            } else if (FromOrTo.TO == fromOrTo) {
+                options.setOutputFromToOption(fromToOption);
+            } else {
+                throw new BadArgumentsException(UNKNOWN_OPTION);
+            }
+        } catch (IllegalArgumentException e) {
             throw new BadArgumentsException(UNKNOWN_OPTION);
         }
+
     }
 
     private void setFormat(Options options, IoFormat format, FromOrTo fromOrTo)
             throws BadArgumentsException {
-        if (this.hasFromFormat && (fromOrTo == FromOrTo.From)
-                || this.hasToFormat && (fromOrTo == FromOrTo.To)) {
+        if (this.hasFromFormat && (fromOrTo == FromOrTo.FROM)
+                || this.hasToFormat && (fromOrTo == FromOrTo.TO)) {
             throw new BadArgumentsException(FORMAT_SET_DUPLICITY);
         }
-        if (FromOrTo.From == fromOrTo) {
+        if (FromOrTo.FROM == fromOrTo) {
             this.hasFromFormat = true;
             options.setInputFormat(format);
-        } else if (FromOrTo.To == fromOrTo) {
+        } else if (FromOrTo.TO == fromOrTo) {
             this.hasToFormat = true;
             options.setOutputFormat(format);
         }
@@ -413,24 +418,24 @@ public class ArgParser {
 
     private void setFile(Options options, String path, FromOrTo fromOrTo)
             throws BadArgumentsException, FileNotFoundException, InvalidInputException {
-        if (this.hasInputFile && (fromOrTo == FromOrTo.From)
-                || this.hasOutputFile && (fromOrTo == FromOrTo.To)) {
+        if (this.hasInputFile && (fromOrTo == FromOrTo.FROM)
+                || this.hasOutputFile && (fromOrTo == FromOrTo.TO)) {
             throw new BadArgumentsException(FILE_SET_DUPLICITY);
         }
         File file = new File(path);
         if (file.isDirectory()) {
             throw new BadArgumentsException(FILE_IS_DIRECTORY);
         }
-        if (!file.canWrite() && fromOrTo == FromOrTo.To) {
+        if (!file.canWrite() && fromOrTo == FromOrTo.TO) {
             throw new InvalidInputException(CANT_WRITE_FILE);
         }
-        if (!file.canRead() && fromOrTo == FromOrTo.From) {
+        if (!file.canRead() && fromOrTo == FromOrTo.FROM) {
             throw new InvalidInputException(CANT_READ_FILE);
         }
-        if (FromOrTo.From == fromOrTo) {
+        if (FromOrTo.FROM == fromOrTo) {
             this.hasInputFile = true;
             options.setInputFile(new FileInputStream(file));
-        } else if (FromOrTo.To == fromOrTo) {
+        } else if (FromOrTo.TO == fromOrTo) {
             this.hasOutputFile = true;
             options.setOutputFile(new FileOutputStream(file));
         }
@@ -442,7 +447,7 @@ public class ArgParser {
             throw new BadArgumentsException(MESSAGE_INVALID_ARGUMENTS);
         }
         this.hasDelimiter = true;
-        options.setDelimiter(delimiter.charAt(0));
+        options.setDelimiter(delimiter);
     }
 
     private void checkForHelp(String[] args)
