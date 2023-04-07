@@ -33,6 +33,9 @@ jobs:
       - name: Run Maven tests
         run: mvn verify
 
+      - name: Run Spotbugs
+        run: mvn spotbugs:check
+
       - name: Run Integration.py
         run: python -m unittest discover -v -s . -p integration.py
       
