@@ -19,6 +19,7 @@ public class Options {
     private boolean wasFromOptionSet = false;
     private boolean wasToOptionSet = false;
     private boolean wasBracketSet = false;
+    private boolean wasDelimiterSet = false;
 
     /**
      * Gets the input format.
@@ -39,7 +40,6 @@ public class Options {
         }
         this.inputFormat = inputFormat;
     }
-
 
     /**
      * Get the input FromToOption.
@@ -110,7 +110,6 @@ public class Options {
             this.outputFromToOption = Optional.of(IoOption.from(outputFromToOption));
             wasToOptionSet = true;
         }
-
     }
 
     public InputStream getInputFile() {
@@ -135,6 +134,7 @@ public class Options {
 
     public void setDelimiter(String delimiter) {
         this.delimiter = delimiter;
+        wasDelimiterSet = true;
     }
 
     public Optional<BracketType> getBracketType() {
@@ -155,5 +155,9 @@ public class Options {
 
     private boolean wasBracketSet() {
         return wasBracketSet;
+    }
+
+    public boolean wasDelimiterSet() {
+        return inputFormat != IoFormat.BYTES || wasDelimiterSet;
     }
 }

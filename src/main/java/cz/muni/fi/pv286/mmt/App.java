@@ -8,7 +8,7 @@ import cz.muni.fi.pv286.mmt.exceptions.HelpInvokedException;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidInputException;
 import cz.muni.fi.pv286.mmt.model.IoFormat;
 import cz.muni.fi.pv286.mmt.model.Options;
-import cz.muni.fi.pv286.mmt.representation.ArrayParser;
+//import cz.muni.fi.pv286.mmt.representation.ArrayParser;
 import cz.muni.fi.pv286.mmt.representation.BitParser;
 import cz.muni.fi.pv286.mmt.representation.ByteParser;
 import cz.muni.fi.pv286.mmt.representation.HexParser;
@@ -37,12 +37,14 @@ public class App {
                 return new BitParser(options);
             }
             case ARRAY -> {
-                return new ArrayParser(options);
+                //return new ArrayParser(options);
             }
             default -> {
                 throw new IllegalArgumentException("Invalid IOFormat");
             }
         }
+
+        throw new IllegalArgumentException("Invalid IOFormat");
     }
 
     /**
@@ -65,8 +67,7 @@ public class App {
             RepresentationParser outParser =
                     getRepresentationParser(options, options.getOutputFormat());
 
-            var input = inParser.parseFrom();
-            outParser.parseTo(input);
+            inParser.parse(outParser);
         } catch (FileNotFoundException e) {
             System.err.println("File not found");
             exit(1);

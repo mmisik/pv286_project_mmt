@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 /**
  * Array parser.
- */
+ *//*
 public class ArrayParser extends RepresentationParser {
 
     public ArrayParser(Options options) {
@@ -164,4 +164,4 @@ public class ArrayParser extends RepresentationParser {
 
         return parseArray(input);
     }
-}
+}*/

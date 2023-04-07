@@ -3,11 +3,20 @@ package cz.muni.fi.pv286.mmt.representation;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidHexCharacterException;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidHexCountException;
 import cz.muni.fi.pv286.mmt.model.Options;
+import cz.muni.fi.pv286.mmt.model.ResultTree;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Hex parser.
@@ -34,28 +43,17 @@ public class HexParser extends RepresentationParser {
     }
 
     @Override
-    public void parseTo(byte[] bytes) throws IOException {
-        final OutputStream output = options.getOutputFile();
-        final InputStream input = new ByteArrayInputStream(bytes);
-
-        while (true) {
-            int readByte = input.read();
-
-            if (readByte == -1) {
-                break;
-            }
-
-            String hexString = getHexFromByte((byte) readByte);
-
-            output.write(hexString.getBytes());
+    public byte[] parseTo(byte[] bytes) throws IOException {
+        StringBuilder hexString = new StringBuilder();
+        for(byte b: bytes) {
+            hexString.append(getHexFromByte(b));
         }
+        return hexString.toString().getBytes();
+
     }
 
     @Override
-    public byte[] parseFrom() throws IOException {
-
-        byte[] bytes = getInput();
-
+    public byte[] parseFrom(byte[] bytes) throws IOException {
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
         final InputStream input = new ByteArrayInputStream(bytes);
 

@@ -20,8 +20,7 @@ public class ParserTest {
         options.setOutputFile(outputStream);
 
         try {
-            byte[] bytes = fromParser.parseFrom();
-            toParser.parseTo(bytes);
+            fromParser.parse(toParser);
         } catch (Exception e) {
             assertTrue(true, e.getMessage());
             return;
@@ -64,8 +63,7 @@ public class ParserTest {
         options.setOutputFile(outputStream);
 
         try {
-            byte[] bytes = fromParser.parseFrom();
-            toParser.parseTo(bytes);
+            fromParser.parse(toParser);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -120,8 +118,7 @@ public class ParserTest {
         options.setOutputFile(outputStream);
 
         try {
-            byte[] bytes = fromParser.parseFrom();
-            toParser.parseTo(bytes);
+            fromParser.parse(toParser);
         } catch (Exception e) {
             fail(e.getMessage());
         }

@@ -81,8 +81,7 @@ public class BitParser extends RepresentationParser {
     }
 
     @Override
-    public void parseTo(byte[] bytes) throws IOException {
-        final OutputStream output = options.getOutputFile();
+    public byte[] parseTo(byte[] bytes) throws IOException {
         final InputStream input = new ByteArrayInputStream(bytes);
         StringBuilder binaryString = new StringBuilder();
 
@@ -95,16 +94,13 @@ public class BitParser extends RepresentationParser {
             String binary = String.format("%8s", Integer.toBinaryString(inputByte & 0xFF))
                     .replace(' ', '0');
             binaryString.append(binary);
-
         }
 
-        output.write(binaryString.toString().getBytes());
+        return binaryString.toString().getBytes();
     }
 
     @Override
-    public byte[] parseFrom() throws IOException {
-        byte[] bytes = getInput();
-
+    public byte[] parseFrom(byte[] bytes) throws IOException {
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
         final InputStream input = new ByteArrayInputStream(bytes);
 
