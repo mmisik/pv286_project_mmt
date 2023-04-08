@@ -5,9 +5,12 @@ import cz.muni.fi.pv286.mmt.exceptions.InvalidIntInputException;
 import cz.muni.fi.pv286.mmt.model.FromToOption;
 import cz.muni.fi.pv286.mmt.model.IoOption;
 import cz.muni.fi.pv286.mmt.model.Options;
+import cz.muni.fi.pv286.mmt.model.ResultTree;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -50,7 +53,7 @@ public class IntParser extends RepresentationParser {
     }
 
     @Override
-    public void parseTo(byte[] bytes) throws IOException {
+    public byte[] parseTo(byte[] bytes) throws IOException {
 
         if (bytes.length > 4) {
             throw new InvalidIntInputException();
@@ -82,14 +85,11 @@ public class IntParser extends RepresentationParser {
                 + ((bytesToWrite[2] & 0xff) << 8)
                 + (bytesToWrite[3] & 0xff);
         byte[] integerAsString = String.valueOf(integer).getBytes();
-
-        options.getOutputFile().write(integerAsString);
+        return integerAsString;
     }
 
     @Override
-    public byte[] parseFrom() throws IOException {
-        byte[] bytes = getInput();
-
+    public byte[] parseFrom(byte[] bytes) throws IOException {
         final InputStream input = new ByteArrayInputStream(bytes);
 
         int characterCount = 0;

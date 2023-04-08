@@ -20,8 +20,7 @@ public class ParserTest {
         options.setOutputFile(outputStream);
 
         try {
-            byte[] bytes = fromParser.parseFrom();
-            toParser.parseTo(bytes);
+            fromParser.parse(toParser);
         } catch (Exception e) {
             assertTrue(true, e.getMessage());
             return;
@@ -31,9 +30,7 @@ public class ParserTest {
     }
 
     protected <From extends RepresentationParser, To extends RepresentationParser>
-    void assertConversionThrows(Class<From> fromClass, Class<To> toClass, byte[] input, byte[] output) {
-        Options options = new Options();
-
+    void assertConversionThrows(Options options, Class<From> fromClass, Class<To> toClass, byte[] input, byte[] output) {
         try {
             From fromInstance = fromClass.getConstructor(Options.class).newInstance(options);
             To toInstance = toClass.getConstructor(Options.class).newInstance(options);
@@ -42,6 +39,12 @@ public class ParserTest {
         } catch (Exception e) {
             fail(e.getMessage());
         }
+    }
+
+    protected <From extends RepresentationParser, To extends RepresentationParser>
+    void assertConversionThrows(Class<From> fromClass, Class<To> toClass, byte[] input, byte[] output) {
+        Options options = new Options();
+        assertConversionThrows(options, fromClass, toClass, input, output);
     }
 
     protected <T extends RepresentationParser>
@@ -64,8 +67,7 @@ public class ParserTest {
         options.setOutputFile(outputStream);
 
         try {
-            byte[] bytes = fromParser.parseFrom();
-            toParser.parseTo(bytes);
+            fromParser.parse(toParser);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -110,6 +112,11 @@ public class ParserTest {
         assertConversion(parser, parser, input, output);
     }
 
+    protected <T extends RepresentationParser>
+    void assertRoundTrip(Options options, Class<T> parser, byte[] input, byte[] output) {
+        assertConversion(options, parser, parser, input, output);
+    }
+
     private <From extends RepresentationParser, To extends RepresentationParser>
     void assertConversionFails(Options options, From fromParser, To toParser, byte[] input, byte[] output) {
 
@@ -120,8 +127,7 @@ public class ParserTest {
         options.setOutputFile(outputStream);
 
         try {
-            byte[] bytes = fromParser.parseFrom();
-            toParser.parseTo(bytes);
+            fromParser.parse(toParser);
         } catch (Exception e) {
             fail(e.getMessage());
         }

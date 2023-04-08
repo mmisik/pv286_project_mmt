@@ -21,14 +21,8 @@ public class ParserFuzzTest {
         var outputStream = new ByteArrayOutputStream();
         options.setOutputFile(outputStream);
 
-//        try {
-            byte[] bytes = fromParser.parseFrom();
-            toParser.parseTo(bytes);
-//        } catch (Exception e) {
-//            fail(e.getMessage());
-//        }
+        fromParser.parse(toParser);
 
-//        System.out.println("Expected:" + Arrays.toString(output) + " Got: " + Arrays.toString(outputStream.toByteArray()));
         assertArrayEquals(output, outputStream.toByteArray());
     }
 

@@ -11,16 +11,17 @@ public class ArrayParserTest extends ParserTest {
         options.setInputFormat(IoFormat.ARRAY);
         options.setOutputFormat(IoFormat.ARRAY);
 
-        assertConversion(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02}".getBytes(), "{0x01, 0x02}".getBytes());
-        assertConversion(options, ArrayParser.class, ArrayParser.class, "{0x01, 2, 0b11, '\\x04'}".getBytes(), "{0x01, 0x02, 0x03, 0x04}".getBytes());
+        assertConversion(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02}".getBytes(), "{0x1, 0x2}".getBytes());
+        assertConversion(options, ArrayParser.class, ArrayParser.class, "{0x01, 2, 0b11, '\\x04'}".getBytes(), "{0x1, 0x2, 0x3, 0x4}".getBytes());
     }
 
     @Test
     public void fromHexToArrayTest() {
         Options options = new Options();
         options.setInputFormat(IoFormat.HEX);
+        options.setOutputFormat(IoFormat.ARRAY);
 
-        assertConversion(HexParser.class, ArrayParser.class, "01020304".getBytes(), "{0x01, 0x02, 0x03, 0x04}".getBytes());
+        assertConversion(options, HexParser.class, ArrayParser.class, "01020304".getBytes(), "{0x1, 0x2, 0x3, 0x4}".getBytes());
     }
 
     @Test
@@ -38,9 +39,10 @@ public class ArrayParserTest extends ParserTest {
         Options options = new Options();
         options.setInputFormat(IoFormat.BITS);
         options.setInputFromToOption(FromToOption.LEFT);
+        options.setOutputFormat(IoFormat.ARRAY);
         options.setOutputFromToOption(FromToOption.HEX);
 
-        assertConversion(options, BitParser.class, ArrayParser.class, "00000001000000100000001100000100".getBytes(), "{0x01, 0x02, 0x03, 0x04}".getBytes());
+        assertConversion(options, BitParser.class, ArrayParser.class, "00000001000000100000001100000100".getBytes(), "{0x1, 0x2, 0x3, 0x4}".getBytes());
     }
 
     @Test
@@ -60,8 +62,8 @@ public class ArrayParserTest extends ParserTest {
         options.setInputFormat(IoFormat.ARRAY);
         options.setOutputFormat(IoFormat.ARRAY);
 
-        assertConversion(options, ArrayParser.class, ArrayParser.class, "{hello}".getBytes(), "{}".getBytes());
-        assertConversion(options, ArrayParser.class, ArrayParser.class, "{10A}".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{hello}".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{10A}".getBytes(), "{}".getBytes());
     }
 
     @Test
@@ -79,7 +81,7 @@ public class ArrayParserTest extends ParserTest {
         options.setInputFormat(IoFormat.ARRAY);
         options.setOutputFormat(IoFormat.ARRAY);
 
-        assertConversion(options, ArrayParser.class, ArrayParser.class, "{{0x01, (2), [3, 0b100, 0x05],'\\x06'}}".getBytes(), "{{0x01, {0x02}, {0x03, 0x04, 0x05}, 0x06}}".getBytes());
+        assertConversion(options, ArrayParser.class, ArrayParser.class, "{{0x01, (2), [3, 0b100, 0x05],'\\x06'}}".getBytes(), "{{0x1, {0x2}, {0x3, 0x4, 0x5}, 0x6}}".getBytes());
     }
 
     @Test
@@ -89,11 +91,11 @@ public class ArrayParserTest extends ParserTest {
         options.setOutputFormat(IoFormat.ARRAY);
         options.setBracketOption(BracketType.SQUARE_BRACKET);
 
-        assertConversion(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02, 0x03, 0x04]".getBytes(), "[0x01, 0x02, 0x03, 0x04]".getBytes());
+        assertConversion(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02, 0x03, 0x04]".getBytes(), "[0x1, 0x2, 0x3, 0x4]".getBytes());
 
         options.setBracketOption(BracketType.REGULAR_BRACKET);
 
-        assertConversion(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02, 0x03, 0x04)".getBytes(), "(0x01, 0x02, 0x03, 0x04)".getBytes());
+        assertConversion(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02, 0x03, 0x04)".getBytes(), "(0x1, 0x2, 0x3, 0x4)".getBytes());
     }
 
     @Test
@@ -107,7 +109,7 @@ public class ArrayParserTest extends ParserTest {
 
         options.setOutputFromToOption(FromToOption.CHARACTER);
 
-        assertConversion(options, ArrayParser.class, ArrayParser.class, "{0x41, 0x42, 0x43, 0x44}".getBytes(), "{'A', 'B', 'C', 'D'}".getBytes());
+        assertConversion(options, ArrayParser.class, ArrayParser.class, "{0x41, 0x42, 0x43, 0x44}".getBytes(), "{'\\x41', '\\x42', '\\x43', '\\x44'}".getBytes());
 
         options.setOutputFromToOption(FromToOption.BINARY);
 
