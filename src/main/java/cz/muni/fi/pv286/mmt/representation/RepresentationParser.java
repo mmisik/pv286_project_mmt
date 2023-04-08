@@ -55,7 +55,8 @@ public abstract class RepresentationParser {
             outputStream.write(readByte);
 
             if (foundDelimiter(outputStream)) {
-                representations.add(new ResultTree(outputStream.toByteArray()));
+                var bytes = stripDelimiter(outputStream.toByteArray());
+                representations.add(new ResultTree(bytes));
                 outputStream.reset();
             }
         }
@@ -64,28 +65,33 @@ public abstract class RepresentationParser {
     }
 
     protected boolean foundDelimiter(ByteArrayOutputStream stream) {
+
         if (!options.wasDelimiterSet()) {
             return false;
         }
 
-        ByteBuffer wrappedBuffer = ByteBuffer.wrap(stream.toByteArray());
+        byte[] bytes = stream.toByteArray();
         byte[] delimiterBytes = options.getDelimiter().getBytes();
 
-        byte[] lastBytes = Stream
-                .generate(wrappedBuffer::get)
-                .limit(delimiterBytes.length)
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toList(),
-                        list -> {
-                            byte[] result = new byte[list.size()];
-                            for (int i = 0; i < list.size(); i++) {
-                                result[i] = list.get(i);
-                            }
-                            return result;
-                        }
-                ));
+        int delimiterCounter = 0;
+        for (int i = bytes.length - delimiterBytes.length; i < bytes.length; i++) {
+            if (bytes[i] != delimiterBytes[delimiterCounter++]) {
+                return false;
+            }
+        }
 
-        return Arrays.equals(delimiterBytes, lastBytes);
+        return true;
+    }
+
+    protected byte[] stripDelimiter(byte[] bytes) {
+        byte[] delimiterBytes = options.getDelimiter().getBytes();
+
+        int len = bytes.length - delimiterBytes.length;
+        byte[] strippedBytes = new byte[len];
+
+        System.arraycopy(bytes, 0, strippedBytes, 0, len);
+
+        return strippedBytes;
     }
 
     protected abstract byte[] parseTo(byte[] bytes) throws IOException;

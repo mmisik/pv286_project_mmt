@@ -55,7 +55,7 @@ class IntParserTest extends ParserTest {
     @Test
     public void maxFourBytesTest() {
         // input must be of maximum 4 bytes, otherwise it cannot be parsed as an 32 bit integer
-        assertConversionThrows(ByteParser.class, IntParser.class, "test\n".getBytes(), "".getBytes());
+        assertConversionThrows(ByteParser.class, IntParser.class, "12345".getBytes(), "".getBytes());
         assertConversion(ByteParser.class, IntParser.class, "test".getBytes(), "1952805748".getBytes());
     }
 

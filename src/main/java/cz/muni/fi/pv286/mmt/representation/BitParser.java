@@ -59,7 +59,7 @@ public class BitParser extends RepresentationParser {
         return paddedBits;
     }
 
-    private static byte[] encodeToByteArray(byte[] bits) {
+    public static byte[] encodeToByteArray(byte[] bits) {
         byte[] results = new byte[(bits.length + 7) / 8];
         int byteValue = 0;
         int index;

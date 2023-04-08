@@ -31,14 +31,14 @@ public class HexParser extends RepresentationParser {
         return Character.digit(c, 16) != -1;
     }
 
-    private byte getByteFromHex(char a, char b) {
+    static byte getByteFromHex(char a, char b) {
         int first = Character.digit(a, 16);
         int second = Character.digit(b, 16);
 
         return (byte) ((first << 4) + second);
     }
 
-    private String getHexFromByte(byte b) {
+    static String getHexFromByte(byte b) {
         return String.format("%02x", b);
     }
 
