@@ -73,6 +73,7 @@ public class ArrayParserTest extends ParserTest {
         options.setOutputFormat(IoFormat.ARRAY);
 
         assertConversion(options, ArrayParser.class, ArrayParser.class, "{}".getBytes(), "{}".getBytes());
+        assertConversion(options, ArrayParser.class, ArrayParser.class, "([], {})".getBytes(), "{{}, {}}".getBytes());
     }
 
     @Test

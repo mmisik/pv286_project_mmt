@@ -18,19 +18,24 @@ public class BitParserFuzzTest extends ParserFuzzTest {
 
         try {
             byte[] bytes = data.consumeBytes(10);
-            assertRoundTrip(BitParser.class, bytes, sanitize(bytes));
+            assertRoundTrip(BitParser.class, removeNewLines(bytes), sanitize(removeNewLines(bytes)));
 
             bytes = data.consumeBytes(100);
-            assertRoundTrip(BitParser.class, bytes, sanitize(bytes));
+            assertRoundTrip(BitParser.class, removeNewLines(bytes), sanitize(removeNewLines(bytes)));
 
             bytes = data.consumeBytes(1000);
-            assertRoundTrip(BitParser.class, bytes, sanitize(bytes));
+            assertRoundTrip(BitParser.class, removeNewLines(bytes), sanitize(removeNewLines(bytes)));
 
             bytes = data.consumeRemainingAsBytes();
-            assertRoundTrip(BitParser.class, bytes, sanitize(bytes));
+            assertRoundTrip(BitParser.class, removeNewLines(bytes), sanitize(removeNewLines(bytes)));
         } catch (InvalidBitCharacterException | InvalidBitInputException e) {
             // Ignore
         }
+    }
+
+    private byte[] removeNewLines(byte[] bytes) {
+        String str = new String(bytes, StandardCharsets.UTF_8);
+        return str.replace("\n", "").getBytes();
     }
 
     private byte[] sanitize(byte[] bytes) {

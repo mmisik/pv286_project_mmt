@@ -168,10 +168,10 @@ public class ArrayParser extends RepresentationParser {
                     bytesList.add((byte) ' ');
                 }
 
-                if (!child.getChildren().isEmpty()) {
+                if (!child.getChildren().isEmpty() || child.getValue() == null) {
                     bytesList.add(openingBracket);
                     stack.add(child);
-                } else if (child.getValue().length >= 1) {
+                } else if (child.getValue() != null && child.getValue().length >= 1) {
                     byte[] parsedValue = parseFromByte(child.getValue()[0], outputOption);
                     for (byte b : parsedValue) {
                         bytesList.add(b);
