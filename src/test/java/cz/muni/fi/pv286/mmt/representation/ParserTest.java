@@ -30,9 +30,7 @@ public class ParserTest {
     }
 
     protected <From extends RepresentationParser, To extends RepresentationParser>
-    void assertConversionThrows(Class<From> fromClass, Class<To> toClass, byte[] input, byte[] output) {
-        Options options = new Options();
-
+    void assertConversionThrows(Options options, Class<From> fromClass, Class<To> toClass, byte[] input, byte[] output) {
         try {
             From fromInstance = fromClass.getConstructor(Options.class).newInstance(options);
             To toInstance = toClass.getConstructor(Options.class).newInstance(options);
@@ -41,6 +39,12 @@ public class ParserTest {
         } catch (Exception e) {
             fail(e.getMessage());
         }
+    }
+
+    protected <From extends RepresentationParser, To extends RepresentationParser>
+    void assertConversionThrows(Class<From> fromClass, Class<To> toClass, byte[] input, byte[] output) {
+        Options options = new Options();
+        assertConversionThrows(options, fromClass, toClass, input, output);
     }
 
     protected <T extends RepresentationParser>

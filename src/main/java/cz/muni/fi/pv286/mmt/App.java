@@ -9,11 +9,8 @@ import cz.muni.fi.pv286.mmt.exceptions.InvalidInputException;
 import cz.muni.fi.pv286.mmt.model.IoFormat;
 import cz.muni.fi.pv286.mmt.model.Options;
 //import cz.muni.fi.pv286.mmt.representation.ArrayParser;
-import cz.muni.fi.pv286.mmt.representation.BitParser;
-import cz.muni.fi.pv286.mmt.representation.ByteParser;
-import cz.muni.fi.pv286.mmt.representation.HexParser;
-import cz.muni.fi.pv286.mmt.representation.IntParser;
-import cz.muni.fi.pv286.mmt.representation.RepresentationParser;
+import cz.muni.fi.pv286.mmt.representation.*;
+
 import java.io.FileNotFoundException;
 
 
@@ -37,14 +34,12 @@ public class App {
                 return new BitParser(options);
             }
             case ARRAY -> {
-                //return new ArrayParser(options);
+                return new ArrayParser(options);
             }
             default -> {
                 throw new IllegalArgumentException("Invalid IOFormat");
             }
         }
-
-        throw new IllegalArgumentException("Invalid IOFormat");
     }
 
     /**
