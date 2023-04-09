@@ -96,6 +96,7 @@ public class ArgParser {
         if (Patterns.binaryOption.matcher(option).matches()) {
             return FromToOption.BINARY;
         }
+
         throw new BadArgumentsException(UNKNOWN_OPTION);
     }
 
@@ -488,9 +489,9 @@ public class ArgParser {
         static Pattern left = Pattern.compile("^left$");
         static Pattern right = Pattern.compile("^right$");
         static Pattern extractor = Pattern.compile("-{1,2}\\w+=(.*)");
-        static Pattern curlyBracket = Pattern.compile("^\"[{}]\"$");
-        static Pattern squareBracket = Pattern.compile("^\"[\\[\\]]\"$");
-        static Pattern regularBracket = Pattern.compile("^\"[()]\"$");
+        static Pattern curlyBracket = Pattern.compile("^[{}]");
+        static Pattern squareBracket = Pattern.compile("^[\\[\\]]");
+        static Pattern regularBracket = Pattern.compile("^[()]");
         static Pattern hexOption = Pattern.compile("^0x$");
         static Pattern decimalOption = Pattern.compile("^0$");
         static Pattern charOption = Pattern.compile("^a$");

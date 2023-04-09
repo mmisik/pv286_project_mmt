@@ -2,15 +2,11 @@ package cz.muni.fi.pv286.mmt.representation;
 
 import cz.muni.fi.pv286.mmt.exceptions.InvalidIntCountException;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidIntInputException;
-import cz.muni.fi.pv286.mmt.model.FromToOption;
 import cz.muni.fi.pv286.mmt.model.IoOption;
 import cz.muni.fi.pv286.mmt.model.Options;
-import cz.muni.fi.pv286.mmt.model.ResultTree;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -28,18 +24,18 @@ public class IntParser extends RepresentationParser {
 
     private byte[] getBytesFromInteger(int integer, Endian endian) {
         if (endian == Endian.BIG) {
-            return new byte[]{
-                    (byte) (integer >> 24),
-                    (byte) (integer >> 16),
-                    (byte) (integer >> 8),
-                    (byte) integer
+            return new byte[] {
+                (byte) (integer >> 24),
+                (byte) (integer >> 16),
+                (byte) (integer >> 8),
+                (byte) integer
             };
         } else {
-            return new byte[]{
-                    (byte) integer,
-                    (byte) (integer >> 8),
-                    (byte) (integer >> 16),
-                    (byte) (integer >> 24)
+            return new byte[] {
+                (byte) integer,
+                (byte) (integer >> 8),
+                (byte) (integer >> 16),
+                (byte) (integer >> 24)
             };
         }
     }
@@ -81,9 +77,9 @@ public class IntParser extends RepresentationParser {
 
         // Java doesn't have unsigned types, so we need to apply a mask to every byte
         long integer = ((long) (bytesToWrite[0] & 0xff) << 24)
-                + ((bytesToWrite[1] & 0xff) << 16)
-                + ((bytesToWrite[2] & 0xff) << 8)
-                + (bytesToWrite[3] & 0xff);
+            + ((bytesToWrite[1] & 0xff) << 16)
+            + ((bytesToWrite[2] & 0xff) << 8)
+            + (bytesToWrite[3] & 0xff);
         byte[] integerAsString = String.valueOf(integer).getBytes();
         return integerAsString;
     }

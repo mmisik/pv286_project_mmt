@@ -107,6 +107,113 @@ class TestPanbyteIntegration(unittest.TestCase):
         output = subprocess.check_output(" ".join(cmd), shell=True).decode().strip()
         self.assertEqual(output, expected_output_str)
 
+    def test_echo_hex_to_array(self):
+        input_str = "01020304"
+        expected_output_str = "{0x1, 0x2, 0x3, 0x4}"
+        cmd = ["echo", "-n", input_str, "|", "java", "-jar", "target/panbyte.jar", "-f", "hex", "-t", "array"]
+        output = subprocess.check_output(" ".join(cmd), shell=True).decode().strip()
+        self.assertEqual(output, expected_output_str)
+
+    def test_echo_array_to_hex(self):
+        input_str = "{0x01, 2, 0b11, '\\x04'}"
+        expected_output_str = "01020304"
+        cmd = ["echo", "-n", f'"{input_str}"', "|", "java", "-jar", "target/panbyte.jar", "-f", "array", "-t", "hex"]
+        output = subprocess.check_output(" ".join(cmd), shell=True).decode().strip()
+        self.assertEqual(output, expected_output_str)
+
+    def test_echo_array_to_array(self):
+        input_str = "{0x01, 2, 0b11, '\\x04'}"
+        expected_output_str = "{0x1, 0x2, 0x3, 0x4}"
+        cmd = ["echo", "-n", f'"{input_str}"', "|", "java", "-jar", "target/panbyte.jar", "-f", "array", "-t", "array"]
+        output = subprocess.check_output(" ".join(cmd), shell=True).decode().strip()
+        self.assertEqual(output, expected_output_str)
+
+    def test_echo_array_to_array_hex(self):
+        input_str = "[0x01, 2, 0b11, '\\x04']"
+        expected_output_str = "{0x1, 0x2, 0x3, 0x4}"
+        cmd = ["echo", "-n", f'"{input_str}"', "|", "java", "-jar", "target/panbyte.jar", "-f", "array", "-t", "array",
+               "--to-options=0x"]
+        output = subprocess.check_output(" ".join(cmd), shell=True).decode().strip()
+        self.assertEqual(output, expected_output_str)
+
+    def test_echo_array_to_array_decimal(self):
+        input_str = "(0x01, 2, 0b11, '\\x04')"
+        expected_output_str = "{1, 2, 3, 4}"
+        cmd = ["echo", "-n", f'"{input_str}"', "|", "java", "-jar", "target/panbyte.jar", "-f", "array", "-t", "array",
+               "--to-options=0"]
+        output = subprocess.check_output(" ".join(cmd), shell=True).decode().strip()
+        self.assertEqual(output, expected_output_str)
+
+    def test_echo_array_to_array_characters(self):
+        input_str = "{0x01, 2, 0b11, '\\x04'}"
+        expected_output_str = "{'\\x01', '\\x02', '\\x03', '\\x04'}"
+        cmd = ["echo", "-n", f'"{input_str}"', "|", "java", "-jar", "target/panbyte.jar", "-f", "array", "-t", "array",
+               "--to-options=a"]
+        output = subprocess.check_output(" ".join(cmd), shell=True).decode().strip()
+        self.assertEqual(output, expected_output_str)
+
+    def test_echo_array_to_array_binary(self):
+        input_str = "[0x01, 2, 0b11, '\\x04']"
+        expected_output_str = "{0b1, 0b10, 0b11, 0b100}"
+        cmd = ["echo", "-n", f'"{input_str}"', "|", "java", "-jar", "target/panbyte.jar", "-f", "array", "-t", "array",
+               "--to-options=0b"]
+        output = subprocess.check_output(" ".join(cmd), shell=True).decode().strip()
+        self.assertEqual(output, expected_output_str)
+
+    def test_echo_array_to_array_regular_bracket(self):
+        input_str = "(0x01, 2, 0b11, '\\x04')"
+        expected_output_str = "(0x1, 0x2, 0x3, 0x4)"
+        cmd = ["echo", "-n", f'"{input_str}"', "|", "java", "-jar", "target/panbyte.jar", "-f", "array", "-t", "array",
+               "--to-options=\"(\""]
+        output = subprocess.check_output(" ".join(cmd), shell=True).decode().strip()
+        self.assertEqual(output, expected_output_str)
+
+    def test_echo_array_to_array_square_bracket_decimal(self):
+        input_str = "(0x01, 2, 0b11, '\\x04')"
+        expected_output_str = "[1, 2, 3, 4]"
+        cmd = ["echo", "-n", f'"{input_str}"', "|", "java", "-jar", "target/panbyte.jar", "-f", "array", "-t", "array",
+               "--to-options=0", "--to-options=\"[\""]
+        output = subprocess.check_output(" ".join(cmd), shell=True).decode().strip()
+        self.assertEqual(output, expected_output_str)
+
+    def test_echo_array_to_array_square_to_curly_bracket_nested(self):
+        input_str = "[[1, 2], [3, 4], [5, 6]]"
+        expected_output_str = "{{0x1, 0x2}, {0x3, 0x4}, {0x5, 0x6}}"
+        cmd = ["echo", "-n", f'"{input_str}"', "|", "java", "-jar", "target/panbyte.jar", "-f", "array", "-t", "array"]
+        output = subprocess.check_output(" ".join(cmd), shell=True).decode().strip()
+        self.assertEqual(output, expected_output_str)
+
+    def test_echo_array_to_array_square_to_curly_bracket_nested_decimal(self):
+        input_str = "[[1, 2], [3, 4], [5, 6]]"
+        expected_output_str = "{{1, 2}, {3, 4}, {5, 6}}"
+        cmd = ["echo", "-n", f'"{input_str}"', "|", "java", "-jar", "target/panbyte.jar", "-f", "array", "-t", "array",
+               "--to-options=0", "--to-options=\"{\""]
+        output = subprocess.check_output(" ".join(cmd), shell=True).decode().strip()
+        self.assertEqual(output, expected_output_str)
+
+    def test_echo_array_to_array_curly_to_square_bracket_nested_decimal(self):
+        input_str = "{{0x01, (2), [3, 0b100, 0x05], '\\x06'}}"
+        expected_output_str = "[[1, [2], [3, 4, 5], 6]]"
+        cmd = ["echo", "-n", f'"{input_str}"', "|", "java", "-jar", "target/panbyte.jar", "-f", "array", "-t", "array",
+               "--to-options=0", "--to-options=\"[\""]
+        output = subprocess.check_output(" ".join(cmd), shell=True).decode().strip()
+        self.assertEqual(output, expected_output_str)
+
+    def test_echo_array_to_array_regular_to_curly_bracket_empty(self):
+        input_str = "()"
+        expected_output_str = "{}"
+        cmd = ["echo", "-n", f'"{input_str}"', "|", "java", "-jar", "target/panbyte.jar", "-f", "array", "-t", "array"]
+        output = subprocess.check_output(" ".join(cmd), shell=True).decode().strip()
+        self.assertEqual(output, expected_output_str)
+
+    def test_echo_array_to_array_brackets_to_square_empty_nested(self):
+        input_str = "([], {})"
+        expected_output_str = "[[], []]"
+        cmd = ["echo", "-n", f'"{input_str}"', "|", "java", "-jar", "target/panbyte.jar", "-f", "array", "-t", "array",
+               "--to-options=\"[\""]
+        output = subprocess.check_output(" ".join(cmd), shell=True).decode().strip()
+        self.assertEqual(output, expected_output_str)
+
 
 if __name__ == '__main__':
     unittest.main()
