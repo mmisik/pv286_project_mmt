@@ -5,6 +5,7 @@ import cz.muni.fi.pv286.mmt.model.ResultTree;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +63,7 @@ public abstract class RepresentationParser {
         }
 
         byte[] bytes = stream.toByteArray();
-        byte[] delimiterBytes = options.getDelimiter().getBytes();
+        byte[] delimiterBytes = options.getDelimiter().getBytes(StandardCharsets.UTF_8);
 
         int delimiterCounter = 0;
         for (int i = bytes.length - delimiterBytes.length; i < bytes.length; i++) {
@@ -75,7 +76,7 @@ public abstract class RepresentationParser {
     }
 
     protected byte[] stripDelimiter(byte[] bytes) {
-        byte[] delimiterBytes = options.getDelimiter().getBytes();
+        byte[] delimiterBytes = options.getDelimiter().getBytes(StandardCharsets.UTF_8);
 
         int len = bytes.length - delimiterBytes.length;
         byte[] strippedBytes = new byte[len];
@@ -110,7 +111,7 @@ public abstract class RepresentationParser {
             // - and there is more than one element in the list
             // - and the current element is not the last
             if (options.wasDelimiterSet() && results.size() > 1 && result != results.get(results.size() - 1)) {
-                options.getOutputFile().write(options.getDelimiter().getBytes());
+                options.getOutputFile().write(options.getDelimiter().getBytes(StandardCharsets.UTF_8));
             }
         }
     }

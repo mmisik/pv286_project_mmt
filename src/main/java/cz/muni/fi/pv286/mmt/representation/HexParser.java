@@ -7,6 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Hex parser.
@@ -38,7 +39,7 @@ public class HexParser extends RepresentationParser {
         for (byte b : bytes) {
             hexString.append(getHexFromByte(b));
         }
-        return hexString.toString().getBytes();
+        return hexString.toString().getBytes(StandardCharsets.UTF_8);
 
     }
 
