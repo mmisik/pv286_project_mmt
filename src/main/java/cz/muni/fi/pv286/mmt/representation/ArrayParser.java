@@ -66,6 +66,10 @@ public class ArrayParser extends RepresentationParser {
             tokens.add(entry.substring(start).trim());
         }
 
+        if (!stack.isEmpty()) {
+            throw new InvalidArrayBracketException();
+        }
+
         return tokens;
     }
 

@@ -64,6 +64,284 @@ public class ArrayParserTest extends ParserTest {
 
         assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{hello}".getBytes(), "{}".getBytes());
         assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{10A}".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{_}".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{.}".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{\\}".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{?}".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{!}".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{,}".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{!@#$%^&*()}".getBytes(), "{}".getBytes());
+    }
+
+    @Test
+    public void missingClosingBracketTest() {
+        Options options = new Options();
+        options.setInputFormat(IoFormat.ARRAY);
+        options.setOutputFormat(IoFormat.ARRAY);
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(".getBytes(), "{}".getBytes());
+
+        options.setBracketOption(BracketType.SQUARE_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{".getBytes(), "[]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[".getBytes(), "[]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(".getBytes(), "[]".getBytes());
+
+        options.setBracketOption(BracketType.REGULAR_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{".getBytes(), "()".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[".getBytes(), "()".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(".getBytes(), "()".getBytes());
+    }
+
+    @Test
+    public void missingOpeningBracketTest() {
+        Options options = new Options();
+        options.setInputFormat(IoFormat.ARRAY);
+        options.setOutputFormat(IoFormat.ARRAY);
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "}".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "]".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, ")".getBytes(), "{}".getBytes());
+
+        options.setBracketOption(BracketType.SQUARE_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "}".getBytes(), "[]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "]".getBytes(), "[]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, ")".getBytes(), "[]".getBytes());
+
+        options.setBracketOption(BracketType.REGULAR_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "}".getBytes(), "()".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "]".getBytes(), "()".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, ")".getBytes(), "()".getBytes());
+    }
+
+    @Test
+    public void missingClosingBracketNestedEmptyTest() {
+        Options options = new Options();
+        options.setInputFormat(IoFormat.ARRAY);
+        options.setOutputFormat(IoFormat.ARRAY);
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{{}".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[{]".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "({)".getBytes(), "{}".getBytes());
+
+        options.setBracketOption(BracketType.SQUARE_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{[}".getBytes(), "[]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[[]".getBytes(), "[]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "([)".getBytes(), "[]".getBytes());
+
+        options.setBracketOption(BracketType.REGULAR_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{(}".getBytes(), "()".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[(]".getBytes(), "()".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(()".getBytes(), "()".getBytes());
+    }
+
+    @Test
+    public void missingClosingBracketNestedNotEmptyTest() {
+        Options options = new Options();
+        options.setInputFormat(IoFormat.ARRAY);
+        options.setOutputFormat(IoFormat.ARRAY);
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{{0x01, 0x02}".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[{0x01, 0x02]".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "({0x01, 0x02)".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02{}".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02{]".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02{)".getBytes(), "{0x01, 0x02}".getBytes());
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{{, 0x01, 0x02}".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[{, 0x01, 0x02]".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "({, 0x01, 0x02)".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02, {}".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02, {]".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02, {)".getBytes(), "{0x01, 0x02}".getBytes());
+
+        options.setBracketOption(BracketType.SQUARE_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{[0x01, 0x02}".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[[0x01, 0x02]".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "([0x01, 0x02)".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02[}".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02[]".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02[)".getBytes(), "[0x01, 0x02]".getBytes());
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{[, 0x01, 0x02}".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[[, 0x01, 0x02]".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "([, 0x01, 0x02)".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02, [}".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02, []".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02, [)".getBytes(), "[0x01, 0x02]".getBytes());
+
+        options.setBracketOption(BracketType.REGULAR_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{(0x01, 0x02}".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[(0x01, 0x02]".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "((0x01, 0x02)".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02(}".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02(]".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02()".getBytes(), "(0x01, 0x02)".getBytes());
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{(, 0x01, 0x02}".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[(, 0x01, 0x02]".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "((, 0x01, 0x02)".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02, (}".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02, (]".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02, ()".getBytes(), "(0x01, 0x02)".getBytes());
+    }
+
+    @Test
+    public void missingOpeningBracketNestedEmptyTest() {
+        Options options = new Options();
+        options.setInputFormat(IoFormat.ARRAY);
+        options.setOutputFormat(IoFormat.ARRAY);
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{}}".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[}]".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(})".getBytes(), "{}".getBytes());
+
+        options.setBracketOption(BracketType.SQUARE_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{]}".getBytes(), "[]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[]]".getBytes(), "[]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(])".getBytes(), "[]".getBytes());
+
+        options.setBracketOption(BracketType.REGULAR_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{)}".getBytes(), "()".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[)]".getBytes(), "()".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "())".getBytes(), "()".getBytes());
+    }
+
+    @Test
+    public void missingOpeningBracketNestedNotEmptyTest() {
+        Options options = new Options();
+        options.setInputFormat(IoFormat.ARRAY);
+        options.setOutputFormat(IoFormat.ARRAY);
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02}}".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02}]".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02})".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{}0x01, 0x02}".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[}0x01, 0x02]".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(}0x01, 0x02)".getBytes(), "{0x01, 0x02}".getBytes());
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02, }}".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02, }]".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02, })".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{}, 0x01, 0x02}".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[}, 0x01, 0x02]".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(}, 0x01, 0x02)".getBytes(), "{0x01, 0x02}".getBytes());
+
+        options.setBracketOption(BracketType.SQUARE_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02]}".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02]]".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02])".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{]0x01, 0x02}".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[]0x01, 0x02]".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(]0x01, 0x02)".getBytes(), "[0x01, 0x02]".getBytes());
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02, ]}".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02, ]]".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02, ])".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{], 0x01, 0x02}".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[], 0x01, 0x02]".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(], 0x01, 0x02)".getBytes(), "[0x01, 0x02]".getBytes());
+
+        options.setBracketOption(BracketType.REGULAR_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02)}".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02)]".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02))".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{)0x01, 0x02}".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[)0x01, 0x02]".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "()0x01, 0x02)".getBytes(), "(0x01, 0x02)".getBytes());
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02, )}".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02, )]".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02, ))".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{), 0x01, 0x02}".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[), 0x01, 0x02]".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(), 0x01, 0x02)".getBytes(), "(0x01, 0x02)".getBytes());
+    }
+
+    @Test
+    public void mismatchBracketEmptyTest() {
+        Options options = new Options();
+        options.setInputFormat(IoFormat.ARRAY);
+        options.setOutputFormat(IoFormat.ARRAY);
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{]".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{)".getBytes(), "{}".getBytes());
+        assertConversion(options, ArrayParser.class, ArrayParser.class, "{}".getBytes(), "{}".getBytes());
+
+        options.setBracketOption(BracketType.SQUARE_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[}".getBytes(), "[]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[)".getBytes(), "[]".getBytes());
+        assertConversion(options, ArrayParser.class, ArrayParser.class, "[]".getBytes(), "[]".getBytes());
+
+        options.setBracketOption(BracketType.REGULAR_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(}".getBytes(), "()".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(]".getBytes(), "()".getBytes());
+        assertConversion(options, ArrayParser.class, ArrayParser.class, "()".getBytes(), "()".getBytes());
+    }
+
+    @Test
+    public void mismatchBracketNotEmptyTest() {
+        Options options = new Options();
+        options.setInputFormat(IoFormat.ARRAY);
+        options.setOutputFormat(IoFormat.ARRAY);
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02]".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02)".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversion(options, ArrayParser.class, ArrayParser.class, "{0x01, 0x02}".getBytes(), "{0x1, 0x2}".getBytes());
+
+        options.setBracketOption(BracketType.SQUARE_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02}".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02)".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversion(options, ArrayParser.class, ArrayParser.class, "[0x01, 0x02]".getBytes(), "[0x1, 0x2]".getBytes());
+
+        options.setBracketOption(BracketType.REGULAR_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02}".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02]".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversion(options, ArrayParser.class, ArrayParser.class, "(0x01, 0x02)".getBytes(), "(0x1, 0x2)".getBytes());
+    }
+
+    @Test
+    public void invertedBracketsEmptyTest() {
+        Options options = new Options();
+        options.setInputFormat(IoFormat.ARRAY);
+        options.setOutputFormat(IoFormat.ARRAY);
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "}{".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "][".getBytes(), "{}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, ")(".getBytes(), "{}".getBytes());
+
+        options.setBracketOption(BracketType.SQUARE_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "}{".getBytes(), "[]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "][".getBytes(), "[]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, ")(".getBytes(), "[]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, ")(".getBytes(), "[]".getBytes());
+
+        options.setBracketOption(BracketType.REGULAR_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "}{".getBytes(), "()".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "][".getBytes(), "()".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, ")(".getBytes(), "()".getBytes());
+    }
+
+    @Test
+    public void invertedBracketsNotEmptyTest() {
+        Options options = new Options();
+        options.setInputFormat(IoFormat.ARRAY);
+        options.setOutputFormat(IoFormat.ARRAY);
+
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "}0x01, 0x02{".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "]0x01, 0x02[".getBytes(), "{0x01, 0x02}".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, ")0x01, 0x02(".getBytes(), "{0x01, 0x02}".getBytes());
+
+        options.setBracketOption(BracketType.SQUARE_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "}0x01, 0x02{".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "]0x01, 0x02[".getBytes(), "[0x01, 0x02]".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, ")0x01, 0x02(".getBytes(), "[0x01, 0x02]".getBytes());
+
+        options.setBracketOption(BracketType.REGULAR_BRACKET);
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "}0x01, 0x02{".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, "]0x01, 0x02[".getBytes(), "(0x01, 0x02)".getBytes());
+        assertConversionThrows(options, ArrayParser.class, ArrayParser.class, ")0x01, 0x02(".getBytes(), "(0x01, 0x02)".getBytes());
     }
 
     @Test
