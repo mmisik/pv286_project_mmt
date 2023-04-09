@@ -70,7 +70,7 @@ class ArgParserTest {
 
     @Test
     void testArrayOptions() {
-        String[] args = "--from=array --to=array --to-options=0 --to-options=\"{\"".split("\\s+");
+        String[] args = "--from=array --to=array --to-options=0 --to-options={".split("\\s+");
         ArgParser argParser = new ArgParser(args);
         try {
             Options options = argParser.parse();
@@ -230,7 +230,7 @@ class ArgParserTest {
 
     @Test
     void arraySetFormatAndBracketTypeTest() {
-        String[] args = "--from=array --to=array --to-options=0 --to-options=\"{\"".split("\\s+");
+        String[] args = "--from=array --to=array --to-options=0 --to-options={".split("\\s+");
         ArgParser argParser = new ArgParser(args);
         try {
             Options options = argParser.parse();
@@ -245,7 +245,7 @@ class ArgParserTest {
 
     @Test
     void arraySetBracketTypeTwiceTest() {
-        String[] args = "--from=array --to=array --to-options=\"[\" --to-options=\"{\"".split("\\s+");
+        String[] args = "--from=array --to=array --to-options=[ --to-options={".split("\\s+");
         ArgParser argParser = new ArgParser(args);
         try {
             Options options = argParser.parse();
