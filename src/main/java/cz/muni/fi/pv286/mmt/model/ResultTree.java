@@ -3,6 +3,9 @@ package cz.muni.fi.pv286.mmt.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ResultTree structure is used for array parser.
+ */
 public class ResultTree {
     private byte[] value;
     String intermediate;

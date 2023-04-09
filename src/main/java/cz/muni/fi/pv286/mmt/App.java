@@ -8,9 +8,12 @@ import cz.muni.fi.pv286.mmt.exceptions.HelpInvokedException;
 import cz.muni.fi.pv286.mmt.exceptions.InvalidInputException;
 import cz.muni.fi.pv286.mmt.model.IoFormat;
 import cz.muni.fi.pv286.mmt.model.Options;
-//import cz.muni.fi.pv286.mmt.representation.ArrayParser;
-import cz.muni.fi.pv286.mmt.representation.*;
-
+import cz.muni.fi.pv286.mmt.representation.ArrayParser;
+import cz.muni.fi.pv286.mmt.representation.BitParser;
+import cz.muni.fi.pv286.mmt.representation.ByteParser;
+import cz.muni.fi.pv286.mmt.representation.HexParser;
+import cz.muni.fi.pv286.mmt.representation.IntParser;
+import cz.muni.fi.pv286.mmt.representation.RepresentationParser;
 import java.io.FileNotFoundException;
 
 
@@ -18,8 +21,7 @@ import java.io.FileNotFoundException;
  * Main class of the application.
  */
 public class App {
-    private static
-        RepresentationParser getRepresentationParser(Options options, IoFormat ioFormat) {
+    private static RepresentationParser getRepresentationParser(Options options, IoFormat ioFormat) {
         switch (ioFormat) {
             case BYTES -> {
                 return new ByteParser(options);

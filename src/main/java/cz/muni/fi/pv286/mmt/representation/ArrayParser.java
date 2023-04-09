@@ -1,13 +1,13 @@
 package cz.muni.fi.pv286.mmt.representation;
 
-import cz.muni.fi.pv286.mmt.exceptions.*;
+import cz.muni.fi.pv286.mmt.exceptions.InvalidArrayArgumentException;
+import cz.muni.fi.pv286.mmt.exceptions.InvalidArrayBracketException;
+import cz.muni.fi.pv286.mmt.exceptions.InvalidArrayValueException;
 import cz.muni.fi.pv286.mmt.model.BracketType;
 import cz.muni.fi.pv286.mmt.model.IoOption;
 import cz.muni.fi.pv286.mmt.model.Options;
 import cz.muni.fi.pv286.mmt.model.ResultTree;
-
 import java.io.ByteArrayOutputStream;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -15,28 +15,75 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Array parser.
+ */
 public class ArrayParser extends RepresentationParser {
 
     public ArrayParser(Options options) {
         super(options);
     }
 
+    /**
+     * Splits the given string into a list of top-level tokens.
+     *
+     * @param entry The input string.
+     * @return A list of top-level tokens.
+     * @throws InvalidArrayBracketException If the brackets or parentheses
+     *                                      are mismatched or improperly nested.
+     */
+    public static List<String> topLevelSplitTokens(String entry) throws InvalidArrayBracketException {
+        List<String> tokens = new ArrayList<>();
+        List<Character> stack = new ArrayList<>();
+        int start = 0;
+
+        for (int i = 0; i < entry.length(); i++) {
+            char c = entry.charAt(i);
+
+            if (c == '{' || c == '[' || c == '(') {
+                stack.add(c);
+            } else if (c == '}' || c == ']' || c == ')') {
+                if (stack.isEmpty()) {
+                    throw new InvalidArrayBracketException();
+                }
+                char top = stack.remove(stack.size() - 1);
+                if (c == '}' && top != '{') {
+                    throw new InvalidArrayBracketException();
+                }
+                if (c == ']' && top != '[') {
+                    throw new InvalidArrayBracketException();
+                }
+                if (c == ')' && top != '(') {
+                    throw new InvalidArrayBracketException();
+                }
+            } else if (c == ',' && stack.isEmpty()) {
+                tokens.add(entry.substring(start, i).trim());
+                start = i + 1;
+            }
+        }
+
+        if (start < entry.length()) {
+            tokens.add(entry.substring(start).trim());
+        }
+
+        return tokens;
+    }
+
     @Override
     protected byte[] parseTo(byte[] bytes) throws IOException {
         ResultTree parsedTree = translateTo(bytes);
-        if(parsedTree == null) {
-            return new byte[]{};
+        if (parsedTree == null) {
+            return new byte[] {};
         }
         return parse(parsedTree);
     }
 
     private byte[] translateFrom(ResultTree resultTree) throws InvalidArrayValueException {
         List<Byte> bytesList = new ArrayList<>();
-        for(ResultTree t: resultTree.getChildren()) {
-            if(!t.getChildren().isEmpty()) {
+        for (ResultTree t : resultTree.getChildren()) {
+            if (!t.getChildren().isEmpty()) {
                 throw new InvalidArrayValueException();
-            }
-            else {
+            } else {
                 bytesList.add(t.getValue()[0]);
             }
         }
@@ -48,8 +95,8 @@ public class ArrayParser extends RepresentationParser {
     private ResultTree translateTo(byte[] bytes) {
         ResultTree resultTree = new ResultTree(new ArrayList<>());
 
-        for (byte b: bytes) {
-            var rt = new ResultTree(new byte[]{b});
+        for (byte b : bytes) {
+            var rt = new ResultTree(new byte[] {b});
             resultTree.getChildren().add(rt);
         }
 
@@ -59,8 +106,8 @@ public class ArrayParser extends RepresentationParser {
     @Override
     protected byte[] parseFrom(byte[] bytes) throws IOException {
         ResultTree parsedTree = parse(bytes);
-        if(parsedTree == null) {
-            return new byte[]{};
+        if (parsedTree == null) {
+            return new byte[] {};
         }
         return translateFrom(parsedTree);
     }
@@ -91,59 +138,22 @@ public class ArrayParser extends RepresentationParser {
         }
     }
 
-    public static List<String> topLevelSplitTokens(String entry) throws InvalidArrayBracketException {
-        List<String> tokens = new ArrayList<>();
-        List<Character> stack = new ArrayList<>();
-        int start = 0;
-
-        for (int i = 0; i < entry.length(); i++) {
-            char c = entry.charAt(i);
-
-            if (c == '{' || c == '[' || c == '(') {
-                stack.add(c);
-            } else if (c == '}' || c == ']' || c == ')') {
-                if (stack.isEmpty()) {
-                    throw new InvalidArrayBracketException();
-                }
-                char top = stack.remove(stack.size() - 1);
-                if (c == '}' && top != '{') {
-                    throw new InvalidArrayBracketException();
-                }
-                if (c == ']' && top!= '[') {
-                    throw new InvalidArrayBracketException();
-                }
-                if (c == ')' && top!= '(') {
-                    throw new InvalidArrayBracketException();
-                }
-            } else if (c == ',' && stack.isEmpty()) {
-                tokens.add(entry.substring(start, i).trim());
-                start = i + 1;
-            }
-        }
-
-        if (start < entry.length()) {
-            tokens.add(entry.substring(start).trim());
-        }
-
-        return tokens;
-    }
-
     private byte[] parse(ResultTree resultTree) throws IOException { //This destroys the resultTree
         byte openingBracket;
         byte closingBracket;
 
         BracketType bracketType = super.options.getBracketType().orElseThrow(
-                InvalidArrayBracketException::new
+            InvalidArrayBracketException::new
         );
 
         IoOption outputOption = super.options.getOutputFromToOption().orElseThrow(
-                InvalidArrayArgumentException::new
+            InvalidArrayArgumentException::new
         );
 
-        if(bracketType == BracketType.CURLY_BRACKET) {
+        if (bracketType == BracketType.CURLY_BRACKET) {
             openingBracket = '{';
             closingBracket = '}';
-        } else if(bracketType == BracketType.SQUARE_BRACKET) {
+        } else if (bracketType == BracketType.SQUARE_BRACKET) {
             openingBracket = '[';
             closingBracket = ']';
         } else if (bracketType == BracketType.REGULAR_BRACKET) {
@@ -153,9 +163,11 @@ public class ArrayParser extends RepresentationParser {
             throw new InvalidArrayBracketException();
         }
 
-        List<Byte> bytesList = new ArrayList<>() { };
+        List<Byte> bytesList = new ArrayList<>() {
+        };
         bytesList.add(openingBracket);
-        List<ResultTree> stack = new LinkedList<>() {};
+        List<ResultTree> stack = new LinkedList<>() {
+        };
         stack.add(resultTree);
 
         while (!stack.isEmpty()) {
@@ -191,25 +203,10 @@ public class ArrayParser extends RepresentationParser {
         return byteArrayOutputStream.toByteArray();
     }
 
-    private byte[] parseFromByte(byte b, IoOption ioOption) throws InvalidArrayArgumentException {
-        if(ioOption == IoOption.HEX) {
-            return ("0x" + String.format("%01x", b)).getBytes();
-        } else if (ioOption == IoOption.DECIMAL) {
-            return String.format("%d", b).getBytes();
-        } else if (ioOption == IoOption.CHARACTER) {
-            return ("'\\x"+ HexParser.getHexFromByte(b) + "'").getBytes();
-        } else if (ioOption == IoOption.BINARY) {
-            return ("0b" + Integer.toBinaryString(b & 0xFF)).getBytes();
-        } else {
-            throw new InvalidArrayArgumentException("Io option provided was ");
-        }
-
-    }
-
     private ResultTree parse(byte[] bytes) throws IOException {
         List<ResultTree> stack = new LinkedList<>();
         stack.add(new ResultTree(new String(bytes)));
-        while(!stack.isEmpty()) {
+        while (!stack.isEmpty()) {
             ResultTree current = stack.remove(stack.size() - 1);
             if (current.getIntermediate() != null) {
                 String extracted = null;
@@ -230,7 +227,7 @@ public class ArrayParser extends RepresentationParser {
                 } else if (extracted != null) {
                     stack.add(current);
                     List<String> tokens = topLevelSplitTokens(extracted);
-                    for(String token : tokens) {
+                    for (String token : tokens) {
                         ResultTree t = new ResultTree(token.trim());
                         current.getChildren().add(t);
                         stack.add(t);
@@ -246,24 +243,23 @@ public class ArrayParser extends RepresentationParser {
                     if (hexExtracted.find()) {
                         extracted = hexExtracted.group(1);
                         if (extracted.length() > 1) {
-                            byte[] v = new byte[]{ HexParser.getByteFromHex(extracted.charAt(0), extracted.charAt(1))};
+                            byte[] v = new byte[] {HexParser.getByteFromHex(extracted.charAt(0), extracted.charAt(1))};
                             current.setValue(v);
                         } else {
                             byte[] v = new byte[] {HexParser.getByteFromHex('0', extracted.charAt(0))};
                             current.setValue(v);
                         }
-                    }
-                    else if (decimalExtracted.find()) {
+                    } else if (decimalExtracted.find()) {
                         extracted = decimalExtracted.group(1);
                         int value = Integer.parseInt(extracted, 10);
                         if (value > 255 || value < 0) {
                             throw new InvalidArrayValueException();
                         }
-                        byte[] v = new byte[]{(byte) value};
+                        byte[] v = new byte[] {(byte) value};
                         current.setValue(v);
                     } else if (bytesExtracted.find()) {
                         extracted = bytesExtracted.group(1);
-                        byte[] v = new byte[]{HexParser.getByteFromHex(extracted.charAt(0), extracted.charAt(1))};
+                        byte[] v = new byte[] {HexParser.getByteFromHex(extracted.charAt(0), extracted.charAt(1))};
                         current.setValue(v);
                     } else if (bitsExtracted.find()) {
                         extracted = bitsExtracted.group(1);
@@ -275,15 +271,33 @@ public class ArrayParser extends RepresentationParser {
                     current.setIntermediate(null);
                 }
 
-            } else if(stack.isEmpty()) {
+            } else if (stack.isEmpty()) {
                 return current;
             }
         }
         return null;
     }
 
+    private byte[] parseFromByte(byte b, IoOption ioOption) throws InvalidArrayArgumentException {
+        if (ioOption == IoOption.HEX) {
+            return ("0x" + String.format("%01x", b)).getBytes();
+        } else if (ioOption == IoOption.DECIMAL) {
+            return String.format("%d", b).getBytes();
+        } else if (ioOption == IoOption.CHARACTER) {
+            return ("'\\x" + HexParser.getHexFromByte(b) + "'").getBytes();
+        } else if (ioOption == IoOption.BINARY) {
+            return ("0b" + Integer.toBinaryString(b & 0xFF)).getBytes();
+        } else {
+            throw new InvalidArrayArgumentException("Io option provided was ");
+        }
+
+    }
+
+    /**
+     * A utility class containing regular expression for string parsing tasks.
+     */
     public static final class Patterns {
-        private Patterns() {}
+
         static Pattern regularBracketsExtractor = Pattern.compile("^\\((.*)\\)$");
         static Pattern curlyBracketsExtractor = Pattern.compile("^\\{(.*)}$");
         static Pattern squareBracketsExtractor = Pattern.compile("^\\[(.*)]$");
@@ -291,5 +305,8 @@ public class ArrayParser extends RepresentationParser {
         static Pattern hexExtractor = Pattern.compile("^0x([0-9a-fA-F]{1,2})");
         static Pattern bytesExtractor = Pattern.compile("^'\\\\x([0-9a-fA-F]{2})'$");
         static Pattern bitsExtractor = Pattern.compile("^0b([0-1]{1,8})$");
+
+        private Patterns() {
+        }
     }
 }

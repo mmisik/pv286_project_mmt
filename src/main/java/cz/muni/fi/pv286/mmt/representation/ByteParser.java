@@ -1,14 +1,7 @@
 package cz.muni.fi.pv286.mmt.representation;
 
-import cz.muni.fi.pv286.mmt.exceptions.InvalidNestingException;
 import cz.muni.fi.pv286.mmt.model.Options;
-import cz.muni.fi.pv286.mmt.model.ResultTree;
-
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
 
 /**
  * Byte parser.

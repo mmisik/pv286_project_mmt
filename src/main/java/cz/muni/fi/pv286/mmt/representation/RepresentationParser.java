@@ -1,24 +1,15 @@
 package cz.muni.fi.pv286.mmt.representation;
 
-import cz.muni.fi.pv286.mmt.model.IoFormat;
 import cz.muni.fi.pv286.mmt.model.Options;
 import cz.muni.fi.pv286.mmt.model.ResultTree;
-
-import javax.xml.transform.Result;
-import java.nio.ByteBuffer;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Abstract class for representation parsers.
- * Provides common functionality of reading and writing input and output in parsers.
  */
 public abstract class RepresentationParser {
 
@@ -98,6 +89,12 @@ public abstract class RepresentationParser {
 
     protected abstract byte[] parseFrom(byte[] bytes) throws IOException;
 
+    /**
+     * Provides common functionality of reading and writing input and output in parsers.
+     *
+     * @param parseTo The parser used for conversion.
+     * @throws IOException If an error occurs while reading or writing data.
+     */
     public void parse(RepresentationParser parseTo) throws IOException {
         var results = getInput();
 

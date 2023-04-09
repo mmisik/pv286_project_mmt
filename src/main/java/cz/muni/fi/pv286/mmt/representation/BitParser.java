@@ -59,6 +59,12 @@ public class BitParser extends RepresentationParser {
         return paddedBits;
     }
 
+    /**
+     * Encodes an array of bits into an array of bytes.
+     *
+     * @param bits An array of bits.
+     * @return A byte array with the bits grouped into bytes.
+     */
     public static byte[] encodeToByteArray(byte[] bits) {
         byte[] results = new byte[(bits.length + 7) / 8];
         int byteValue = 0;
