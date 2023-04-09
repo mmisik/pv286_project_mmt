@@ -7,6 +7,7 @@ import cz.muni.fi.pv286.mmt.model.Options;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 /**
@@ -80,7 +81,7 @@ public class IntParser extends RepresentationParser {
             + ((bytesToWrite[1] & 0xff) << 16)
             + ((bytesToWrite[2] & 0xff) << 8)
             + (bytesToWrite[3] & 0xff);
-        byte[] integerAsString = String.valueOf(integer).getBytes();
+        byte[] integerAsString = String.valueOf(integer).getBytes(StandardCharsets.UTF_8);
         return integerAsString;
     }
 

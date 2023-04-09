@@ -9,6 +9,7 @@ import cz.muni.fi.pv286.mmt.model.Options;
 import cz.muni.fi.pv286.mmt.model.ResultTree;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -134,7 +135,7 @@ public class ArrayParser extends RepresentationParser {
             // - and there is more than one element in the list
             // - and the current element is not the last
             if (options.wasDelimiterSet() && results.size() > 1 && result != results.get(results.size() - 1)) {
-                options.getOutputFile().write(options.getDelimiter().getBytes());
+                options.getOutputFile().write(options.getDelimiter().getBytes(StandardCharsets.UTF_8));
             }
         }
     }
@@ -206,7 +207,7 @@ public class ArrayParser extends RepresentationParser {
 
     private ResultTree parse(byte[] bytes) throws IOException {
         List<ResultTree> stack = new LinkedList<>();
-        stack.add(new ResultTree(new String(bytes)));
+        stack.add(new ResultTree(new String(bytes, StandardCharsets.UTF_8)));
         while (!stack.isEmpty()) {
             ResultTree current = stack.remove(stack.size() - 1);
             if (current.getIntermediate() != null) {
@@ -281,13 +282,13 @@ public class ArrayParser extends RepresentationParser {
 
     private byte[] parseFromByte(byte b, IoOption ioOption) throws InvalidArrayArgumentException {
         if (ioOption == IoOption.HEX) {
-            return ("0x" + String.format("%01x", b)).getBytes();
+            return ("0x" + String.format("%01x", b)).getBytes(StandardCharsets.UTF_8);
         } else if (ioOption == IoOption.DECIMAL) {
-            return String.format("%d", b).getBytes();
+            return String.format("%d", b).getBytes(StandardCharsets.UTF_8);
         } else if (ioOption == IoOption.CHARACTER) {
-            return ("'\\x" + HexParser.getHexFromByte(b) + "'").getBytes();
+            return ("'\\x" + HexParser.getHexFromByte(b) + "'").getBytes(StandardCharsets.UTF_8);
         } else if (ioOption == IoOption.BINARY) {
-            return ("0b" + Integer.toBinaryString(b & 0xFF)).getBytes();
+            return ("0b" + Integer.toBinaryString(b & 0xFF)).getBytes(StandardCharsets.UTF_8);
         } else {
             throw new InvalidArrayArgumentException("Io option provided was ");
         }

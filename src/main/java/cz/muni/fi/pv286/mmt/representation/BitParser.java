@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -102,7 +103,7 @@ public class BitParser extends RepresentationParser {
             binaryString.append(binary);
         }
 
-        return binaryString.toString().getBytes();
+        return binaryString.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
