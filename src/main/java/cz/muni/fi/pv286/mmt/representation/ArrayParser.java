@@ -72,9 +72,6 @@ public class ArrayParser extends RepresentationParser {
     @Override
     protected byte[] parseTo(byte[] bytes) throws IOException {
         ResultTree parsedTree = translateTo(bytes);
-        if (parsedTree == null) {
-            return new byte[] {};
-        }
         return parse(parsedTree);
     }
 
