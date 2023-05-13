@@ -99,7 +99,7 @@ public class ArrayParser extends RepresentationParser {
 
         for (byte b : bytes) {
             var rt = new ResultTree(new byte[] {b});
-            resultTree.getChildren().add(rt);
+            resultTree.addChild(rt);
         }
 
         return resultTree;
@@ -231,7 +231,7 @@ public class ArrayParser extends RepresentationParser {
                     List<String> tokens = topLevelSplitTokens(extracted);
                     for (String token : tokens) {
                         ResultTree t = new ResultTree(token.trim());
-                        current.getChildren().add(t);
+                        current.addChild(t);
                         stack.add(t);
                     }
                     current.setIntermediate(null);

@@ -38,6 +38,10 @@ public class ResultTree {
         return Collections.unmodifiableList(children);
     }
 
+    public void addChild(ResultTree child) {
+        this.children.add(child);
+    }
+
     public String getIntermediate() {
         return intermediate;
     }
