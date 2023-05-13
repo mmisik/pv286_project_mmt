@@ -1,6 +1,8 @@
 package cz.muni.fi.pv286.mmt.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -9,35 +11,31 @@ import java.util.List;
 public class ResultTree {
     private byte[] value;
     String intermediate;
-    private ArrayList<ResultTree> children = new ArrayList<>();
+    private List<ResultTree> children = new ArrayList<>();
     private int childIndex = 0;
 
     public ResultTree(byte[] value) {
-        this.value = value;
+        this.value = value == null ? null : Arrays.copyOf(value, value.length);
     }
 
     public ResultTree(String intermediate) {
         this.intermediate = intermediate;
     }
 
-    public ResultTree(ArrayList<ResultTree> children) {
-        this.children = children;
+    public ResultTree(List<ResultTree> children) {
+        Collections.copy(this.children, children);
     }
 
     public byte[] getValue() {
-        return value;
+        return this.value == null ? null : Arrays.copyOf(value, value.length);
     }
 
     public void setValue(byte[] value) {
-        this.value = value;
+        this.value = value == null ? null : Arrays.copyOf(value, value.length);
     }
 
     public List<ResultTree> getChildren() {
-        return children;
-    }
-
-    public void setChildren(ArrayList<ResultTree> children) {
-        this.children = children;
+        return Collections.unmodifiableList(children);
     }
 
     public String getIntermediate() {
