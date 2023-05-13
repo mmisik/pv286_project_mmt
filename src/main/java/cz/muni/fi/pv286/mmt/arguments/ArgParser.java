@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,7 +41,7 @@ public class ArgParser {
     private boolean hasDelimiter = false;
 
     public ArgParser(String[] args) {
-        this.args = args;
+        this.args = args == null ? null : Arrays.copyOf(args, args.length);
     }
 
     private static IoFormat matchFormat(String format) throws BadArgumentsException {
